@@ -1,0 +1,2 @@
+(this["webpackJsonpcollaborative-doc"]=this["webpackJsonpcollaborative-doc"]||[]).push([[0],{161:function(t,e,n){"use strict";n.r(e);var c=n(0),o=n.n(c),r=n(26),s=n.n(r),a=n(49),i=n.n(a),b=(n(159),n(3));function j(){return Object(b.jsx)(i.a,{theme:"snow"})}var u=function(){return Object(b.jsx)(j,{})};s.a.render(Object(b.jsx)(o.a.StrictMode,{children:Object(b.jsx)(u,{})}),document.getElementById("root"))}},[[161,1,2]]]);
+//# sourceMappingURL=main.da434308.chunk.js.map

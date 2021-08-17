@@ -1,2 +1,0 @@
-(this["webpackJsonpcollaborative-doc"]=this["webpackJsonpcollaborative-doc"]||[]).push([[0],{9:function(e,t,c){"use strict";c.r(t);var o=c(1),r=c.n(o),n=c(3),i=c.n(n),a=c(0);var s=function(){return Object(a.jsx)("div",{children:"Hello from App"})};i.a.render(Object(a.jsx)(r.a.StrictMode,{children:Object(a.jsx)(s,{})}),document.getElementById("root"))}},[[9,1,2]]]);
-//# sourceMappingURL=main.e5815310.chunk.js.map
