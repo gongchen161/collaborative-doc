@@ -17,6 +17,7 @@ function App() {
           <TextEditor 
             sessionId={sessionId}
           />
+          <div>v1.0</div>
         </Route>
       </Switch>
     </BrowserRouter>
