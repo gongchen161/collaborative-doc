@@ -11,13 +11,16 @@ function App() {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          <Redirect to={`/${uuid()}`} />
+          <Redirect to={`/collaborative-doc/${uuid()}`} />
         </Route>
-        <Route path="/:docId">
+        <Route exact path="/collaborative-doc">
+          <Redirect to={`/collaborative-doc/${uuid()}`} />
+        </Route>
+        <Route path="/collaborative-doc/:docId">
           <TextEditor 
             sessionId={sessionId}
           />
-          <div>v1.0</div>
+          <div>v1.1</div>
         </Route>
       </Switch>
     </BrowserRouter>
