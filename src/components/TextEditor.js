@@ -1,4 +1,5 @@
 import Recat, { useState, useEffect, useRef } from 'react'
+import { useParams } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import firebase from 'firebase'
 import 'react-quill/dist/quill.snow.css';
@@ -8,6 +9,8 @@ export default function TextEditor( { sessionId } ) {
 
     const quill = useRef();
     const [text, setText] = useState("");
+
+    const { docId } = useParams();
 
     const firebaseConfig = {
         apiKey: process.env.REACT_APP_API_KEY,
@@ -40,7 +43,7 @@ export default function TextEditor( { sessionId } ) {
         //   });
 
 
-        firebase.database().ref("/tesing-node1").on('child_added', function(data) {
+        firebase.database().ref(`/${docId}`).on('child_added', function(data) {
             var childData = data.val();
             if (quill && childData.sessionId !== sessionId) {
                 const editor = quill.current.getEditor();
@@ -59,10 +62,9 @@ export default function TextEditor( { sessionId } ) {
 
         console.log('delta', editor.getContents());
         
-        console.log('send-changes')
-        
-        const dbRef = firebase.database().ref("/tesing-node1");
-        dbRef.push({ sessionId: sessionId , delta : delta } );
+        console.log('send-changes');
+    
+        firebase.database().ref(`/${docId}`).push({ sessionId: sessionId , delta : delta } );
     }
 
     return (

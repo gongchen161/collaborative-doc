@@ -2,13 +2,24 @@
 import TextEditor from "./components/TextEditor";
 import uuid from 'react-uuid'
 
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom"
+
 function App() {
   const sessionId = uuid();
 
   return (
-    <TextEditor 
-      sessionId={sessionId}
-    />
+    <BrowserRouter>
+      <Switch>
+        <Route exact path="/">
+          <Redirect to={`/${uuid()}`} />
+        </Route>
+        <Route path="/:docId">
+          <TextEditor 
+            sessionId={sessionId}
+          />
+        </Route>
+      </Switch>
+    </BrowserRouter>
   );
 }
 
