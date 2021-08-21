@@ -1,9 +1,14 @@
 
 import TextEditor from "./components/TextEditor";
+import uuid from 'react-uuid'
 
 function App() {
+  const sessionId = uuid();
+
   return (
-    <TextEditor />
+    <TextEditor 
+      sessionId={sessionId}
+    />
   );
 }
 
