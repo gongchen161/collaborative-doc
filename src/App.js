@@ -2,28 +2,25 @@
 import TextEditor from "./components/TextEditor";
 import uuid from 'react-uuid'
 
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom"
+import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
 
 function App() {
   const sessionId = uuid();
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Switch>
         <Route exact path="/">
-          <Redirect to={`/collaborative-doc/${uuid()}`} />
+          <Redirect to={`/${uuid()}`} />
         </Route>
-        <Route exact path="/collaborative-doc">
-          <Redirect to={`/collaborative-doc/${uuid()}`} />
-        </Route>
-        <Route path="/collaborative-doc/:docId">
+        <Route path="/:docId">
           <TextEditor 
             sessionId={sessionId}
           />
-          <div>v1.1</div>
+          <div>v1.2</div>
         </Route>
       </Switch>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
