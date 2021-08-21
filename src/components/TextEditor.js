@@ -60,9 +60,9 @@ export default function TextEditor( { sessionId } ) {
             return;
         }
 
-        console.log('delta', editor.getContents());
+        // console.log('delta', editor.getContents());
         
-        console.log('send-changes');
+        // console.log('send-changes');
     
         firebase.database().ref(`/${docId}`).push({ sessionId: sessionId , delta : delta } );
     }
