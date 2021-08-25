@@ -1,5 +1,5 @@
 
-import TextEditor from "./components/TextEditor";
+import Document from "./components/Document";
 import uuid from 'react-uuid'
 
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
@@ -14,7 +14,7 @@ function App() {
           <Redirect to={`/${uuid()}`} />
         </Route>
         <Route path="/:docId">
-          <TextEditor 
+          <Document 
             sessionId={sessionId}
           />
           <div>v1.2</div>
