@@ -1,9 +1,9 @@
 import Recat, { useState, useEffect, useRef } from 'react'
 import { useParams } from "react-router-dom";
 import ReactQuill from 'react-quill';
-import firebase from 'firebase'
 import 'react-quill/dist/quill.snow.css';
 import '../styles.css'
+import firebase from '../Firebase';
 
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -17,39 +17,21 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TitleIcon from '@material-ui/icons/Title';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
-    },
-    title: {
-      flexGrow: 1,
-    },
-  }));
+import NavBar from './NavBar';
+
 
 export default function Document( { sessionId } ) {
 
-    const classes = useStyles();
     const quill = useRef();
     const [text, setText] = useState("");
 
     const { docId } = useParams();
 
-    const firebaseConfig = {
-        apiKey: process.env.REACT_APP_API_KEY,
-        authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-        projectId: process.env.REACT_APP_PROJECT_ID,
-        storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-        messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-        appId: process.env.REACT_APP_APP_ID
-    };
+   
     // Initialize Firebase
     useEffect(() => {
     try {
-        firebase.initializeApp(firebaseConfig);
-
+        console.log("loading changes from firebase")
         firebase.database().ref(`/${docId}`).on('child_added', function(data) {
             var childData = data.val();
             if (quill && childData.sessionId !== sessionId) {
@@ -58,7 +40,7 @@ export default function Document( { sessionId } ) {
             }
         })
     } catch (e) {
-
+        console.log("error loading from firebse", e)
     }
     }, []);
 
@@ -72,20 +54,7 @@ export default function Document( { sessionId } ) {
 
     return (
         <div>
-
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                    <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                    Collaborative Doc
-                    </Typography>
-                    <Button color="inherit"> <AccountCircle /></Button>
-                </Toolbar>
-            </AppBar> 
-            
-
+            <NavBar />
             <TextField
                 id="standard-full-width"
                 placeholder="   Document Title"
