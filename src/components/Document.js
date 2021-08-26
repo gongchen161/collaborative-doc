@@ -13,6 +13,9 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TitleIcon from '@material-ui/icons/Title';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -81,7 +84,30 @@ export default function Document( { sessionId } ) {
                     <Button color="inherit"> <AccountCircle /></Button>
                 </Toolbar>
             </AppBar> 
-       
+            
+
+            <TextField
+                id="standard-full-width"
+                placeholder="   Document Title"
+                fullWidth
+                margin="normal"
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                onKeyPress={(ev) => {
+                    if (ev.key === 'Enter') {
+                        // Do code here
+                       // ev.preventDefault();
+                    }
+                }}
+                InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <TitleIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+            />
         
             <ReactQuill 
                 theme="snow"
