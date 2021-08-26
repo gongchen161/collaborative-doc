@@ -1,23 +1,23 @@
 {
   "files": {
     "main.css": "/collaborative-doc/static/css/main.a3292a6a.chunk.css",
-    "main.js": "/collaborative-doc/static/js/main.c2102e71.chunk.js",
-    "main.js.map": "/collaborative-doc/static/js/main.c2102e71.chunk.js.map",
+    "main.js": "/collaborative-doc/static/js/main.d0485eb9.chunk.js",
+    "main.js.map": "/collaborative-doc/static/js/main.d0485eb9.chunk.js.map",
     "runtime-main.js": "/collaborative-doc/static/js/runtime-main.cd29f35a.js",
     "runtime-main.js.map": "/collaborative-doc/static/js/runtime-main.cd29f35a.js.map",
     "static/css/2.f83b9687.chunk.css": "/collaborative-doc/static/css/2.f83b9687.chunk.css",
-    "static/js/2.81a215b9.chunk.js": "/collaborative-doc/static/js/2.81a215b9.chunk.js",
-    "static/js/2.81a215b9.chunk.js.map": "/collaborative-doc/static/js/2.81a215b9.chunk.js.map",
+    "static/js/2.1ff64cdc.chunk.js": "/collaborative-doc/static/js/2.1ff64cdc.chunk.js",
+    "static/js/2.1ff64cdc.chunk.js.map": "/collaborative-doc/static/js/2.1ff64cdc.chunk.js.map",
     "index.html": "/collaborative-doc/index.html",
     "static/css/2.f83b9687.chunk.css.map": "/collaborative-doc/static/css/2.f83b9687.chunk.css.map",
     "static/css/main.a3292a6a.chunk.css.map": "/collaborative-doc/static/css/main.a3292a6a.chunk.css.map",
-    "static/js/2.81a215b9.chunk.js.LICENSE.txt": "/collaborative-doc/static/js/2.81a215b9.chunk.js.LICENSE.txt"
+    "static/js/2.1ff64cdc.chunk.js.LICENSE.txt": "/collaborative-doc/static/js/2.1ff64cdc.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.cd29f35a.js",
     "static/css/2.f83b9687.chunk.css",
-    "static/js/2.81a215b9.chunk.js",
+    "static/js/2.1ff64cdc.chunk.js",
     "static/css/main.a3292a6a.chunk.css",
-    "static/js/main.c2102e71.chunk.js"
+    "static/js/main.d0485eb9.chunk.js"
   ]
 }
