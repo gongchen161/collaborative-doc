@@ -16,9 +16,10 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TitleIcon from '@material-ui/icons/Title';
+import { useAuth } from '../AuthContext';
 
 import NavBar from './NavBar';
-
+import { useHistory } from 'react-router-dom';
 
 export default function Document( { sessionId } ) {
 
@@ -29,7 +30,15 @@ export default function Document( { sessionId } ) {
 
     const titleRef = createRef();
     const [disableTitle, setDisableTitle] = useState(false)
-
+    const { user } = useAuth()
+    const history = useHistory();
+    
+    useEffect(() => {
+        if (!user) {
+            history.push('/login')
+        }
+    }, [])
+    
    
     // Initialize Firebase
     useEffect(() => {
@@ -121,7 +130,6 @@ export default function Document( { sessionId } ) {
         
             <ReactQuill 
                 theme="snow"
-                value={text}
                 onChange={uploadChanges}
                 ref={quill}
             />

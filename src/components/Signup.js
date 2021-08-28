@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -20,6 +20,8 @@ import NavBar from './NavBar';
 import { auth } from '../Firebase';
 
 import { useAuth } from '../AuthContext';
+import { useHistory } from 'react-router-dom';
+
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -48,7 +50,16 @@ const useStyles = makeStyles((theme) => ({
     const passwordRef = useRef();
     const password2Ref = useRef();
 
-    const { setOpenSnackbar, setMessage } = useAuth()
+    const { setOpenSnackbar, setMessage, user } = useAuth()
+    const history = useHistory();
+
+    useEffect(() => {
+        if (!user) {
+            history.push('/home')
+        }
+      }, [])
+
+   
 
     const signUp = async (e) => {
         e.preventDefault();

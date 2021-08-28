@@ -17,8 +17,11 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TitleIcon from '@material-ui/icons/Title';
 import Snackbar from '@material-ui/core/Snackbar';
-
 import { useAuth } from '../AuthContext';
+import { Link } from 'react-router-dom';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import uuid from 'react-uuid'
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,9 +38,21 @@ const useStyles = makeStyles((theme) => ({
 export default function NavBar() {
 
     const classes = useStyles();
+    const history = useHistory();
 
-    const { openSnackbar, setOpenSnackbar, message, setMessage } = useAuth()
+    const { openSnackbar, setOpenSnackbar, message, setMessage, user } = useAuth()
 
+    const goToNewDoc = async (e) => {
+        try {
+            firebase.database().ref(`/${user.uid}-docs`).push({ docId: uuid() , title : "" } );
+        } catch (e) {
+            setOpenSnackbar(true)
+            setMessage("Error on creating a new document");
+            return;
+        }
+        history.push(`/doc/${uuid()}`)
+        
+    }
     return (
         <AppBar position="static">
         <Snackbar
@@ -56,7 +71,8 @@ export default function NavBar() {
             <Typography variant="h6" className={classes.title}>
             Collaborative Doc
             </Typography>
-            <Button color="inherit"> <AccountCircle /></Button>
+             {!user && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> </Button>}
+             {user && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/> </Button>}
         </Toolbar>
         </AppBar> 
     )

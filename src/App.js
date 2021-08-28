@@ -18,7 +18,7 @@ function App() {
     <HashRouter>
       <Switch>
         <Route exact path="/">
-          <Redirect to={`/${uuid()}`} />
+          <Redirect to={`/home`} />
         </Route>
         <Route exact path="/signup">
           <Signup 
@@ -32,7 +32,7 @@ function App() {
           <Home 
           />
         </Route>
-        <Route path="/:docId">
+        <Route path="/doc/:docId">
           <Document 
             sessionId={sessionId}
           />

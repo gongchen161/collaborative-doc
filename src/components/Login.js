@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -51,8 +51,13 @@ const useStyles = makeStyles((theme) => ({
 
     const history = useHistory();
 
-    const { setOpenSnackbar, setMessage } = useAuth()
+    const { setOpenSnackbar, setMessage, user } = useAuth()
 
+    useEffect(() => {
+        if (!user) {
+            history.push('/login')
+        }
+      }, [])
     const login = async (e) => {
         e.preventDefault();
 
