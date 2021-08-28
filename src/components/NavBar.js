@@ -43,14 +43,15 @@ export default function NavBar() {
     const { openSnackbar, setOpenSnackbar, message, setMessage, user } = useAuth()
 
     const goToNewDoc = async (e) => {
+        const docId = uuid();
         try {
-            firebase.database().ref(`/${user.uid}-docs`).push({ docId: uuid() , title : "" } );
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).push({ docId: docId , title : "" } );
         } catch (e) {
             setOpenSnackbar(true)
             setMessage("Error on creating a new document");
             return;
         }
-        history.push(`/doc/${uuid()}`)
+        history.push(`/doc/${docId}`)
         
     }
     return (

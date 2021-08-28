@@ -44,7 +44,7 @@ export default function Document( { sessionId } ) {
     useEffect(() => {
     try {
         console.log("loading changes from firebase")
-        firebase.database().ref(`/${docId}-content`).on('child_added', function(data) {
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
             var childData = data.val();
             if (quill && childData.sessionId !== sessionId) {
                 const editor = quill.current.getEditor();
@@ -52,7 +52,7 @@ export default function Document( { sessionId } ) {
             }
         })
 
-        firebase.database().ref(`/${docId}-title`).limitToLast(1).on('child_added', function(data) {
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).limitToLast(1).on('child_added', function(data) {
             var childData = data.val();
             if (childData.sessionId !== sessionId) {
                 setTitle(childData.title);
@@ -68,12 +68,12 @@ export default function Document( { sessionId } ) {
             return;
         }
     
-        firebase.database().ref(`/${docId}-content`).push({ sessionId: sessionId , delta : delta } );
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).push({ sessionId: sessionId , delta : delta } );
     }
 
 
     const uploadTitle = (text) => {
-        firebase.database().ref(`/${docId}-title`).push({ sessionId: sessionId , title : text } );
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).push({ sessionId: sessionId , title : text } );
     }
 
     return (

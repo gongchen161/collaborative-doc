@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import { useHistory } from 'react-router-dom';
 import firebase from '../Firebase';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,11 +41,11 @@ function Home() {
             return;
         }
 
-        firebase.database().ref(`/${user.uid}-docs`).on('child_added', function(data) {
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).on('child_added', function(data) {
             var childData = data.val();
             if (childData) {
-               setMyDocs(arr =>[...arr, childData])
-            }
+                setMyDocs(arr =>[...arr, childData])
+             }
         })
 
         console.log(myDocs)
@@ -61,7 +62,7 @@ function Home() {
                     <Grid item xs={12} key={x.docId}>
                         <Card className={classes.root}>
                         <CardActionArea>
-                            <CardContent className={classes.paper} > <AssignmentIcon /> { x.docId } {x.title} </CardContent>
+                            <CardContent component={Link} to={`/doc/${x.docId}`}  className={classes.paper} linkto> <AssignmentIcon /> { x.docId } {x.title} </CardContent>
                         </CardActionArea>
                         </Card>
                     </Grid>
