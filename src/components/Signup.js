@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
     const history = useHistory();
 
     useEffect(() => {
-        if (!user) {
+        if (user) {
             history.push('/home')
         }
       }, [])

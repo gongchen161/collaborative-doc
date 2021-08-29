@@ -4,7 +4,7 @@ import Document from "./components/Document";
 import Signup from './components/Signup';
 import Login from './components/Login'
 import Home from './components/Home'
-
+import Profile from './components/Profile'
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom" 
 import { AuthProvider } from './AuthContext';
 
@@ -17,16 +17,16 @@ function App() {
           <Redirect to={`/home`} />
         </Route>
         <Route exact path="/signup">
-          <Signup 
-          />
+          <Signup />
         </Route>
         <Route exact path="/login">
-          <Login 
-          />
+          <Login />
         </Route>
         <Route exact path="/home">
-          <Home 
-          />
+          <Home />
+        </Route>
+        <Route exact path="/profile">
+          <Profile />
         </Route>
         <Route path="/doc/:docId">
           <Document />

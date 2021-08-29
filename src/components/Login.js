@@ -54,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
     const { setOpenSnackbar, setMessage, user } = useAuth()
 
     useEffect(() => {
-        if (!user) {
-            history.push('/login')
+        if (user) {
+            history.push('/home')
         }
       }, [])
     const login = async (e) => {

@@ -23,6 +23,9 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import uuid from 'react-uuid'
 import { useHistory } from 'react-router-dom';
 import HomeIcon from '@material-ui/icons/Home';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { auth } from '../Firebase';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,8 +43,34 @@ export default function NavBar({inDoc}) {
 
     const classes = useStyles();
     const history = useHistory();
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const { openSnackbar, setOpenSnackbar, message, setMessage, user, sessionId } = useAuth()
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+      };
+    
+      const handleClose = () => {
+        setAnchorEl(null);
+      };
+
+      const handleSignout = async () => {
+        setAnchorEl(null);
+        try {
+            await auth.signOut();
+            history.push('/login')
+        } catch (e) {
+            console.log(e);
+            setMessage(e.message);
+            setOpenSnackbar(true);
+        }
+      };
+
+      const goToProfile = async () => {
+        setAnchorEl(null);
+        history.push("/profile")
+      };
 
     const goToNewDoc = async (e) => {
         const docId = uuid();
@@ -77,6 +106,22 @@ export default function NavBar({inDoc}) {
             </Typography>
              {!user && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
              {user && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
+             {user && <div>
+                <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit">  
+                    <MenuIcon color="inherit" />
+                    </Button>  
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                    <MenuItem onClick={goToProfile}>Profile</MenuItem>
+                    <MenuItem onClick={handleSignout}>Logout</MenuItem>
+                </Menu>
+                </div>
+             }
         </Toolbar>
         </AppBar> 
     )
