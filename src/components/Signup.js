@@ -70,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
         }
         try {
             await auth.createUserWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
+            history.push('/home')
         } catch (e) {
             console.log(e);
             setMessage(e.message);

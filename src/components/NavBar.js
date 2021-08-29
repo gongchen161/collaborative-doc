@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import uuid from 'react-uuid'
 import { useHistory } from 'react-router-dom';
+import HomeIcon from '@material-ui/icons/Home';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,17 +36,19 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function NavBar() {
+export default function NavBar({inDoc}) {
 
     const classes = useStyles();
     const history = useHistory();
 
-    const { openSnackbar, setOpenSnackbar, message, setMessage, user } = useAuth()
+    const { openSnackbar, setOpenSnackbar, message, setMessage, user, sessionId } = useAuth()
 
     const goToNewDoc = async (e) => {
         const docId = uuid();
         try {
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).push({ docId: docId , title : "" } );
+            console.log("++++++ creating doc to firebase")
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).push({ docId: docId } );
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).push({ sessionId: sessionId , title : "Untitled" } );
         } catch (e) {
             setOpenSnackbar(true)
             setMessage("Error on creating a new document");
@@ -67,13 +70,13 @@ export default function NavBar() {
         />
         <Toolbar>
             <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <MenuIcon />
+            <Button component={Link} to="/home" color="inherit"> <HomeIcon /></Button>   
             </IconButton>
             <Typography variant="h6" className={classes.title}>
             Collaborative Doc
             </Typography>
-             {!user && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> </Button>}
-             {user && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/> </Button>}
+             {!user && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
+             {user && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
         </Toolbar>
         </AppBar> 
     )

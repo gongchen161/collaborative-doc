@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 
 import { auth } from './Firebase';
+import uuid from 'react-uuid'
 
 const AuthContext = React.createContext();
 
@@ -14,12 +15,14 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState();
     const [openSnackbar, setOpenSnackbar] = useState(false)
     const [message, setMessage] = useState("");
+    const sessionId = uuid();
     const value = {
         user,
         openSnackbar,
         setOpenSnackbar,
         message,
-        setMessage
+        setMessage,
+        sessionId
     }
 
     useEffect(() => {

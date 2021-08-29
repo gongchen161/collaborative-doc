@@ -21,16 +21,16 @@ import { useAuth } from '../AuthContext';
 import NavBar from './NavBar';
 import { useHistory } from 'react-router-dom';
 
-export default function Document( { sessionId } ) {
+export default function Document( ) {
 
     const quill = useRef();
     const [text, setText] = useState("");
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState("Untitled");
     const { docId } = useParams();
 
     const titleRef = createRef();
     const [disableTitle, setDisableTitle] = useState(false)
-    const { user } = useAuth()
+    const { user, sessionId, setOpenSnackbar, setMessage } = useAuth()
     const history = useHistory();
     
     useEffect(() => {
@@ -42,43 +42,48 @@ export default function Document( { sessionId } ) {
    
     // Initialize Firebase
     useEffect(() => {
-    try {
-        console.log("loading changes from firebase")
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
-            var childData = data.val();
-            if (quill && childData.sessionId !== sessionId) {
-                const editor = quill.current.getEditor();
-                editor.updateContents(childData.delta);
-            }
-        })
+        try {
 
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).limitToLast(1).on('child_added', function(data) {
-            var childData = data.val();
-            if (childData.sessionId !== sessionId) {
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
+                console.log("------ fetching content from firebase")
+                var childData = data.val();
+                if (quill && quill.current && childData.sessionId !== sessionId) {
+                    const editor = quill.current.getEditor();
+                    editor.updateContents(childData.delta);
+                }
+            })
+
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).limitToLast(1).on('child_added', function(data) {
+                console.log("------ fetching title from firebase")
+                var childData = data.val();
                 setTitle(childData.title);
-            }
-        })
-    } catch (e) {
-        console.log("error loading from firebse", e)
-    }
+                
+            })
+        } catch (e) {
+            console.log("error loading from firebse", e)
+        }
     }, []);
 
     const uploadChanges = (content, delta, source, editor) => {
         if (source !== 'user') {
             return;
         }
-    
+        console.log("++++++ uploading delta to firebase")
         firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).push({ sessionId: sessionId , delta : delta } );
     }
 
 
     const uploadTitle = (text) => {
+        if (!text || text.trim().length === 0) {
+            return;
+        }
+        console.log("++++++ uploading title to firebase")
         firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).push({ sessionId: sessionId , title : text } );
     }
 
     return (
         <div>
-            <NavBar />
+            <NavBar inDoc={true}/>
             <TextField
                 id="standard-full-width"
                 placeholder="   Document Title"
@@ -91,8 +96,12 @@ export default function Document( { sessionId } ) {
                 inputRef={titleRef}
                 disabled={disableTitle}
                 readOnly={true}
-                autoFocus={true}
                 onChange={(e)=>{
+                    if (e.target.value.trim().length === 0) {
+                        setOpenSnackbar(true);
+                        setMessage("Title cannot be empty");
+                        return;
+                    }
                     setTitle(e.target.value);
                 }}
                 onKeyPress={(ev) => {

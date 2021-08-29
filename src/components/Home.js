@@ -41,10 +41,16 @@ function Home() {
             return;
         }
 
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).on('child_added', function(data) {
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).once('child_added', function(data) {
+            console.log("------ fetching user from firebase")
             var childData = data.val();
             if (childData) {
-                setMyDocs(arr =>[...arr, childData])
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.docId}-title`).limitToLast(1).once('child_added', function(titleData) {
+                    console.log("------ fetching user-title from firebase")
+                    var titleChild = titleData.val();
+                    setMyDocs(arr =>[...arr, {docId : childData.docId, title: titleChild.title }])
+                })
+            
              }
         })
 
@@ -61,8 +67,8 @@ function Home() {
                 {[...myDocs].map((x, i) =>
                     <Grid item xs={12} key={x.docId}>
                         <Card className={classes.root}>
-                        <CardActionArea>
-                            <CardContent component={Link} to={`/doc/${x.docId}`}  className={classes.paper} linkto> <AssignmentIcon /> { x.docId } {x.title} </CardContent>
+                        <CardActionArea component={Link} to={`/doc/${x.docId}`}>
+                            <CardContent   className={classes.paper}> <AssignmentIcon /> {x.title} </CardContent>
                         </CardActionArea>
                         </Card>
                     </Grid>
