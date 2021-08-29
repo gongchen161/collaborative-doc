@@ -15,6 +15,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import { useHistory } from 'react-router-dom';
 import firebase from '../Firebase';
 import { Link } from 'react-router-dom';
+import { CircularProgress, LinearProgress, Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,13 +36,19 @@ function Home() {
     const classes = useStyles();
     const history = useHistory();
     const [myDocs, setMyDocs] = useState([]);
-    useEffect(() => {
+    const [loading, setLoading] = useState(false);
+
+    useEffect(async () => {
         if (!user) {
             history.push('/login')
             return;
         }
 
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).once('child_added', function(data) {
+        console.log("start loading")
+        setLoading(true)
+        console.log("done loading")
+
+        await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).once('child_added', function(data) {
             console.log("------ fetching user from firebase")
             var childData = data.val();
             if (childData) {
@@ -55,6 +62,7 @@ function Home() {
         })
 
         console.log(myDocs)
+        setTimeout(() => { setLoading(false) }, 1500);
 
       }, [])
     console.log("home page rendering")
@@ -62,19 +70,23 @@ function Home() {
     return (
         <div>
             <NavBar></NavBar>
-            <Box m={2} pt={3}>
+            {loading && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
+            { !loading && <Box m={2} pt={3}>
                 <Grid container spacing={3}>
                 {[...myDocs].map((x, i) =>
-                    <Grid item xs={12} key={x.docId}>
+                    <Grid item xs={4} key={x.docId}>
                         <Card className={classes.root}>
                         <CardActionArea component={Link} to={`/doc/${x.docId}`}>
-                            <CardContent   className={classes.paper}> <AssignmentIcon /> {x.title} </CardContent>
+                            <CardContent   className={classes.paper}> 
+                                <AssignmentIcon /> 
+                                <Typography variant="h6" > {x.title}</Typography>
+                                 </CardContent>
                         </CardActionArea>
                         </Card>
                     </Grid>
                 )}
                 </Grid>
-            </Box>
+            </Box> }
         </div>
     )
 }

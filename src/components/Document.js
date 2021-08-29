@@ -20,7 +20,7 @@ import { useAuth } from '../AuthContext';
 
 import NavBar from './NavBar';
 import { useHistory } from 'react-router-dom';
-
+import { CircularProgress, LinearProgress } from '@material-ui/core';
 export default function Document( ) {
 
     const quill = useRef();
@@ -32,7 +32,8 @@ export default function Document( ) {
     const [disableTitle, setDisableTitle] = useState(false)
     const { user, sessionId, setOpenSnackbar, setMessage } = useAuth()
     const history = useHistory();
-    
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         if (!user) {
             history.push('/login')
@@ -42,6 +43,7 @@ export default function Document( ) {
    
     // Initialize Firebase
     useEffect(() => {
+        setLoading(true)
         try {
 
             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
@@ -62,6 +64,7 @@ export default function Document( ) {
         } catch (e) {
             console.log("error loading from firebse", e)
         }
+        setTimeout(() => { setLoading(false) }, 1500);
     }, []);
 
     const uploadChanges = (content, delta, source, editor) => {
@@ -83,7 +86,10 @@ export default function Document( ) {
 
     return (
         <div>
+            
             <NavBar inDoc={true}/>
+            {loading && <div><LinearProgress color='secondary'disableShrink size={80} thickness={10} /></div> }
+
             <TextField
                 id="standard-full-width"
                 placeholder="   Document Title"
@@ -94,7 +100,7 @@ export default function Document( ) {
                     shrink: true,
                 }}
                 inputRef={titleRef}
-                disabled={disableTitle}
+                disabled={disableTitle || loading}
                 readOnly={true}
                 onChange={(e)=>{
                     if (e.target.value.trim().length === 0) {
@@ -140,6 +146,7 @@ export default function Document( ) {
             <ReactQuill 
                 theme="snow"
                 onChange={uploadChanges}
+                readOnly={ loading}
                 ref={quill}
             />
         </div>

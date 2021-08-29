@@ -10,3 +10,10 @@
     box-shadow: 0 0 3px 0 #000;
 
 }
+
+.center {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

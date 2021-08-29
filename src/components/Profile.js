@@ -15,6 +15,8 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import { useHistory } from 'react-router-dom';
 import firebase from '../Firebase';
 import { Link } from 'react-router-dom';
+import { Typography } from '@material-ui/core';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -44,9 +46,14 @@ function Profile() {
       }, [])
 
     return (
+       
+
         <div>
             <NavBar></NavBar>
-            <p>Email: ${user.email}</p>
+                <Card className='center'>
+                    <AccountCircle color='primary' size={44}> </AccountCircle>
+                    <Typography>Email: {user.email}</Typography>
+                </Card>
         </div>
     )
 }
