@@ -33,6 +33,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import SHA256 from "crypto-js/sha256";
+import { CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -52,8 +53,10 @@ export default function NavBar({inDoc, docId}) {
     const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [openShareDocForm, setOpenShareDocForm] = useState(false);
-    const { openSnackbar, setOpenSnackbar, message, setMessage, user } = useAuth()
+    const { openSnackbar, setOpenSnackbar, message, setMessage, user, timeout } = useAuth()
     const shareEmailRef = useRef();
+    const [isCreatingNewDoc, setIsCreatingNewDoc] = useState(false);
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
       };
@@ -88,7 +91,7 @@ export default function NavBar({inDoc, docId}) {
       }
 
 
-      const processShareDoc = async () => {
+      const processShareDoc = () => {
         try {
             console.log("++++++ processShareDoc from firebase")
          
@@ -102,23 +105,28 @@ export default function NavBar({inDoc, docId}) {
         setOpenShareDocForm(false);
     }
 
-
     const goToNewDoc = async (e) => {
         const docId = uuid();
         try {
+            setIsCreatingNewDoc(true);
             console.log("++++++ creating doc to firebase")
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).push({ docId: docId } );
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({ createdBy: user.email , createdTime: new Date().getMilliseconds(), title : "Untitled" } );
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({ createdBy: user.email , createdTime: new Date().getTime(), title : "Untitled" } );
         } catch (e) {
+            await timeout(1500)
+            setIsCreatingNewDoc(false);
             setOpenSnackbar(true)
             setMessage("Error on creating a new document");
             return;
         }
+
+        await timeout(1500);
+
+        setIsCreatingNewDoc(false);
         history.push(`/doc/${docId}`)
-        
     }
     return (
-        <AppBar position="static">
+        <AppBar position="static" color="primary">
         <Snackbar
             anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
              open={openSnackbar}
@@ -182,6 +190,21 @@ export default function NavBar({inDoc, docId}) {
                 </Button>
                 </DialogActions>
             </Dialog>
+            
+            <Dialog open={isCreatingNewDoc} onClose={()=>{}} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Creating Doc</DialogTitle>
+                <DialogContent>
+                <DialogContentText className='center'>
+                    Creating New Doc... Please wait...
+                    <CircularProgress  />
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                </DialogActions>
+            </Dialog>
+
+
+
         </Toolbar>
         </AppBar> 
     )

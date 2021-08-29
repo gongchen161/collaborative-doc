@@ -33,7 +33,7 @@ export default function Document() {
 
     const titleRef = createRef();
     const [disableTitle, setDisableTitle] = useState(false)
-    const { user, setOpenSnackbar, setMessage } = useAuth()
+    const { user, setOpenSnackbar, setMessage, timeout } = useAuth()
     const history = useHistory();
     const [loading, setLoading] = useState(false);
 
@@ -45,11 +45,11 @@ export default function Document() {
     
    
     // Initialize Firebase
-    useEffect(() => {
+    useEffect( () => {
         setLoading(true)
         try {
 
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
+             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
                 console.log("------ fetching content from firebase")
                 var childData = data.val();
                 if (quill && quill.current && childData.sessionId !== sessionId) {
@@ -58,7 +58,7 @@ export default function Document() {
                 }
             })
 
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).on('value', function(data){
+             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).on('value', function(data){
                 console.log("------ fetching title from firebase")
                 var childData = data.val();
                 setTitle(childData.title);
@@ -67,7 +67,8 @@ export default function Document() {
         } catch (e) {
             console.log("error loading from firebse", e)
         }
-        setTimeout(() => { setLoading(false) }, 1500);
+
+        setTimeout( () => setLoading(false), 1000);
     }, []);
 
     const uploadChanges = (content, delta, source, editor) => {
@@ -143,7 +144,7 @@ export default function Document() {
                     ),
                   }}
             />
-            {loading && <div><LinearProgress color='primary'disableShrink size={80} thickness={10} /></div> }
+            {loading && <div><LinearProgress color='primary' size={80} thickness={10} /></div> }
 
             <ReactQuill 
                 theme="snow"
