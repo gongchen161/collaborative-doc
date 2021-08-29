@@ -30,7 +30,6 @@ function App() {
         </Route>
         <Route path="/doc/:docId">
           <Document />
-          <div>v1.2</div>
         </Route>
       </Switch>
     </HashRouter>

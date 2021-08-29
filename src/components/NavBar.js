@@ -1,4 +1,4 @@
-import Recat, { useState, useEffect, useRef } from 'react'
+import Recat, { useState, useEffect, useRef, createRef } from 'react'
 import { useParams } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -26,6 +26,12 @@ import HomeIcon from '@material-ui/icons/Home';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { auth } from '../Firebase';
+import ShareIcon from '@material-ui/icons/Share';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,14 +45,14 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function NavBar({inDoc}) {
+export default function NavBar({inDoc, docId}) {
 
     const classes = useStyles();
     const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
-
+    const [openShareDocForm, setOpenShareDocForm] = useState(false);
     const { openSnackbar, setOpenSnackbar, message, setMessage, user, sessionId } = useAuth()
-
+    const shareEmailRef = useRef();
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
       };
@@ -71,6 +77,29 @@ export default function NavBar({inDoc}) {
         setAnchorEl(null);
         history.push("/profile")
       };
+
+      const startShareDoc = () =>{
+          setOpenShareDocForm(true);
+      }
+
+      const endShareDoc = () => {
+          setOpenShareDocForm(false);
+      }
+
+
+      const processShareDoc = async () => {
+        try {
+           await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-entitlement`).push({ email: shareEmailRef.current.value } );
+
+        } catch (e) {
+            setOpenSnackbar(true)
+            setMessage(e.message)
+            console.log("error loading from firebse", e)
+        }
+
+        setOpenShareDocForm(false);
+    }
+
 
     const goToNewDoc = async (e) => {
         const docId = uuid();
@@ -106,6 +135,10 @@ export default function NavBar({inDoc}) {
             </Typography>
              {!user && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
              {user && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
+             {user && inDoc && <Button onClick={startShareDoc} color="inherit"> 
+                    <ShareIcon/>   Share Doc
+                    
+                    </Button>}
              {user && <div>
                 <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit">  
                     <MenuIcon color="inherit" />
@@ -122,6 +155,31 @@ export default function NavBar({inDoc}) {
                 </Menu>
                 </div>
              }
+             <Dialog open={openShareDocForm} onClose={endShareDoc} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Share Doc</DialogTitle>
+                <DialogContent>
+                <DialogContentText>
+                    To share, please enter the email
+                </DialogContentText>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="name"
+                    label="Email Address"
+                    type="email"
+                    fullWidth
+                    inputRef={shareEmailRef}
+                />
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={endShareDoc} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={processShareDoc} color="primary">
+                    Share
+                </Button>
+                </DialogActions>
+            </Dialog>
         </Toolbar>
         </AppBar> 
     )

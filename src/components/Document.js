@@ -21,6 +21,7 @@ import { useAuth } from '../AuthContext';
 import NavBar from './NavBar';
 import { useHistory } from 'react-router-dom';
 import { CircularProgress, LinearProgress } from '@material-ui/core';
+
 export default function Document( ) {
 
     const quill = useRef();
@@ -87,7 +88,7 @@ export default function Document( ) {
     return (
         <div>
             
-            <NavBar inDoc={true}/>
+            <NavBar inDoc={true} docId={docId}/>
             {loading && <div><LinearProgress color='secondary'disableShrink size={80} thickness={10} /></div> }
 
             <TextField
