@@ -21,17 +21,19 @@ import { useAuth } from '../AuthContext';
 import NavBar from './NavBar';
 import { useHistory } from 'react-router-dom';
 import { CircularProgress, LinearProgress } from '@material-ui/core';
+import uuid from 'react-uuid'
 
-export default function Document( ) {
+export default function Document() {
 
     const quill = useRef();
     const [text, setText] = useState("");
     const [title, setTitle] = useState("Untitled");
     const { docId } = useParams();
+    const [sessionId, setSessionId] = useState(uuid());
 
     const titleRef = createRef();
     const [disableTitle, setDisableTitle] = useState(false)
-    const { user, sessionId, setOpenSnackbar, setMessage } = useAuth()
+    const { user, setOpenSnackbar, setMessage } = useAuth()
     const history = useHistory();
     const [loading, setLoading] = useState(false);
 
@@ -56,7 +58,7 @@ export default function Document( ) {
                 }
             })
 
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).limitToLast(1).on('child_added', function(data) {
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).on('value', function(data){
                 console.log("------ fetching title from firebase")
                 var childData = data.val();
                 setTitle(childData.title);
@@ -82,15 +84,13 @@ export default function Document( ) {
             return;
         }
         console.log("++++++ uploading title to firebase")
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).push({ sessionId: sessionId , title : text } );
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({title : text});
     }
 
     return (
         <div>
             
             <NavBar inDoc={true} docId={docId}/>
-            {loading && <div><LinearProgress color='secondary'disableShrink size={80} thickness={10} /></div> }
-
             <TextField
                 id="standard-full-width"
                 placeholder="   Document Title"
@@ -143,7 +143,8 @@ export default function Document( ) {
                     ),
                   }}
             />
-        
+            {loading && <div><LinearProgress color='primary'disableShrink size={80} thickness={10} /></div> }
+
             <ReactQuill 
                 theme="snow"
                 onChange={uploadChanges}

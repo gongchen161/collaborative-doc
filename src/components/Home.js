@@ -16,6 +16,7 @@ import { useHistory } from 'react-router-dom';
 import firebase from '../Firebase';
 import { Link } from 'react-router-dom';
 import { CircularProgress, LinearProgress, Typography } from '@material-ui/core';
+import SHA256 from "crypto-js/sha256";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,17 +49,18 @@ function Home() {
         setLoading(true)
         console.log("done loading")
 
-        await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).once('child_added', function(data) {
+        await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function(data) {
             console.log("------ fetching user from firebase")
             var childData = data.val();
             if (childData) {
-                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.docId}-title`).limitToLast(1).once('child_added', function(titleData) {
+
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.docId}-misc`).on('value', function(titleData) {
                     console.log("------ fetching user-title from firebase")
                     var titleChild = titleData.val();
                     setMyDocs(arr =>[...arr, {docId : childData.docId, title: titleChild.title }])
                 })
-            
-             }
+            }
+
         })
 
         console.log(myDocs)

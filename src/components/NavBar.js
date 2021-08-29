@@ -32,6 +32,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import SHA256 from "crypto-js/sha256";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -51,7 +52,7 @@ export default function NavBar({inDoc, docId}) {
     const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [openShareDocForm, setOpenShareDocForm] = useState(false);
-    const { openSnackbar, setOpenSnackbar, message, setMessage, user, sessionId } = useAuth()
+    const { openSnackbar, setOpenSnackbar, message, setMessage, user } = useAuth()
     const shareEmailRef = useRef();
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -89,8 +90,9 @@ export default function NavBar({inDoc, docId}) {
 
       const processShareDoc = async () => {
         try {
-           await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-entitlement`).push({ email: shareEmailRef.current.value } );
-
+            console.log("++++++ processShareDoc from firebase")
+         
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).push({ docId: docId } );
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
@@ -105,8 +107,8 @@ export default function NavBar({inDoc, docId}) {
         const docId = uuid();
         try {
             console.log("++++++ creating doc to firebase")
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${user.uid}-user`).push({ docId: docId } );
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-title`).push({ sessionId: sessionId , title : "Untitled" } );
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).push({ docId: docId } );
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({ createdBy: user.email , createdTime: new Date().getMilliseconds(), title : "Untitled" } );
         } catch (e) {
             setOpenSnackbar(true)
             setMessage("Error on creating a new document");

@@ -15,14 +15,12 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState();
     const [openSnackbar, setOpenSnackbar] = useState(false)
     const [message, setMessage] = useState("");
-    const sessionId = uuid();
     const value = {
         user,
         openSnackbar,
         setOpenSnackbar,
         message,
         setMessage,
-        sessionId
     }
 
     useEffect(() => {

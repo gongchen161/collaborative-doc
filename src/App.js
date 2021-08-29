@@ -7,8 +7,11 @@ import Home from './components/Home'
 import Profile from './components/Profile'
 import { HashRouter, Switch, Route, Redirect } from "react-router-dom" 
 import { AuthProvider } from './AuthContext';
-
+import uuid from 'react-uuid'
+import SHA256 from "crypto-js/sha256";
 function App() {
+
+  var sha256Hash = SHA256("Test1");
   return (
     <AuthProvider>
     <HashRouter>
@@ -29,7 +32,7 @@ function App() {
           <Profile />
         </Route>
         <Route path="/doc/:docId">
-          <Document />
+          <Document/>
         </Route>
       </Switch>
     </HashRouter>
