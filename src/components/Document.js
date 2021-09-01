@@ -91,7 +91,7 @@ export default function Document() {
     return (
         <div>
             
-            <NavBar inDoc={true} docId={docId}/>
+            <NavBar inDoc={true} docId={docId} inUser={true}/>
             <TextField
                 id="standard-full-width"
                 placeholder="   Document Title"

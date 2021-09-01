@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function NavBar({inDoc, docId}) {
+export default function NavBar({inDoc, docId, inUser}) {
 
     const classes = useStyles();
     const history = useHistory();
@@ -95,7 +95,7 @@ export default function NavBar({inDoc, docId}) {
         try {
             console.log("++++++ processShareDoc from firebase")
          
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).push({ docId: docId } );
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(docId).update({docId:docId});
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
@@ -110,7 +110,7 @@ export default function NavBar({inDoc, docId}) {
         try {
             setIsCreatingNewDoc(true);
             console.log("++++++ creating doc to firebase")
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).push({ docId: docId } );
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(docId).update({docId:docId});
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({ createdBy: user.email , createdTime: new Date().getTime(), title : "Untitled" } );
         } catch (e) {
             await timeout(1500)
@@ -120,7 +120,7 @@ export default function NavBar({inDoc, docId}) {
             return;
         }
 
-        await timeout(1500);
+        await timeout(500);
 
         setIsCreatingNewDoc(false);
         history.push(`/doc/${docId}`)
@@ -143,13 +143,13 @@ export default function NavBar({inDoc, docId}) {
             <Typography variant="h6" className={classes.title}>
             Collaborative Doc
             </Typography>
-             {!user && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
-             {user && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
-             {user && inDoc && <Button onClick={startShareDoc} color="inherit"> 
+             {!inUser && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
+             {inUser && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
+             {inUser && inDoc && <Button onClick={startShareDoc} color="inherit"> 
                     <ShareIcon/>   Share Doc
                     
                     </Button>}
-             {user && <div>
+             {inUser && <div>
                 <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit">  
                     <MenuIcon color="inherit" />
                     </Button>  
@@ -191,7 +191,7 @@ export default function NavBar({inDoc, docId}) {
                 </DialogActions>
             </Dialog>
             
-            <Dialog open={isCreatingNewDoc} onClose={()=>{}} aria-labelledby="form-dialog-title">
+            <Dialog open={isCreatingNewDoc} onClose={()=>{setIsCreatingNewDoc(false)}} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Creating Doc</DialogTitle>
                 <DialogContent>
                 <DialogContentText className='center'>

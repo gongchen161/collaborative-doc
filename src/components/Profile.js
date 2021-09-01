@@ -49,7 +49,7 @@ function Profile() {
        
 
         <div>
-            <NavBar></NavBar>
+            <NavBar inUser={true}></NavBar>
                 <Card className='center'>
                     <AccountCircle color='primary' size={44}> </AccountCircle>
                     <Typography>Email: {user.email}</Typography>
