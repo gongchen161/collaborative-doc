@@ -160,15 +160,22 @@ function Home() {
                     x.createdBy !== user.email &&
                     <Grid item xs={4} key={x.docId}>
                         <Card className={classes.root}>
-                        <CardActionArea component={Link} to={`/doc/${x.docId}`}>
-                            <CardContent   className={classes.paper}> 
-                                <AssignmentIcon color='primary' /> 
+                        <CardContent   className={classes.paper}> 
+                               <Typography className={classes.relativeDiv}>
+                                    <AssignmentIcon className={classes.leftIcon} color='primary' /> 
+                                    <Button  onClick={()=>{confirmDeleteDoc(true, x.title, x.docId)}}className={classes.rightIcon}><DeleteForeverIcon  color="primary"/></Button>
+                                </Typography>
+
+                            <CardActionArea component={Link} to={`/doc/${x.docId}`}>
+                            
                                 <Typography variant="h5" > {x.title}</Typography>
                                 <Typography variant="body1" > From: {x.createdBy}</Typography>
                                 <Typography variant="caption" > {new Date(x.createdTime).toString()}</Typography>
-                                 </CardContent>
-                        </CardActionArea>
+                                 
+                            </CardActionArea>
+                        </CardContent>
                         </Card>
+
                     </Grid>
                 )}
                 </Grid>

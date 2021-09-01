@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function NavBar({inDoc, docId, inUser}) {
+export default function NavBar({inDoc, docId, inUser, canShare}) {
 
     const classes = useStyles();
     const history = useHistory();
@@ -145,7 +145,7 @@ export default function NavBar({inDoc, docId, inUser}) {
             </Typography>
              {!inUser && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
              {inUser && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
-             {inUser && inDoc && <Button onClick={startShareDoc} color="inherit"> 
+             {inUser && inDoc && canShare && <Button onClick={startShareDoc} color="inherit"> 
                     <ShareIcon/>   Share Doc
                     
                     </Button>}

@@ -17,11 +17,14 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TitleIcon from '@material-ui/icons/Title';
 import { useAuth } from '../AuthContext';
+import ErrorIcon from '@material-ui/icons/Error';
 
 import NavBar from './NavBar';
 import { useHistory } from 'react-router-dom';
 import { CircularProgress, LinearProgress } from '@material-ui/core';
 import uuid from 'react-uuid'
+import SHA256 from "crypto-js/sha256";
+import { IsoTwoTone } from '@material-ui/icons';
 
 export default function Document() {
 
@@ -30,6 +33,8 @@ export default function Document() {
     const [title, setTitle] = useState("Untitled");
     const { docId } = useParams();
     const [sessionId, setSessionId] = useState(uuid());
+
+    const [isAuthorized, setIsAuthorized] = useState(0);
 
     const titleRef = createRef();
     const [disableTitle, setDisableTitle] = useState(false)
@@ -45,9 +50,32 @@ export default function Document() {
     
    
     // Initialize Firebase
-    useEffect( () => {
+    useEffect( async () => {
         setLoading(true)
+        setIsAuthorized(0)
         try {
+            let result = 0;
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function(data) {
+                console.log("------ fetching user from firebase")
+                var childData = data.val();
+                if (childData && childData.docId === docId) {
+                    result = 1;
+                }
+    
+            })
+
+          
+            if (result !== 1) {
+                result = 2;
+            }
+
+            setIsAuthorized(result);
+
+            if (result === 2) {
+                return;
+            }
+
+
 
              firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
                 console.log("------ fetching content from firebase")
@@ -91,67 +119,71 @@ export default function Document() {
     return (
         <div>
             
-            <NavBar inDoc={true} docId={docId} inUser={true}/>
-            <TextField
-                id="standard-full-width"
-                placeholder="   Document Title"
-                fullWidth
-                value={title}
-                margin="normal"
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                inputRef={titleRef}
-                disabled={disableTitle || loading}
-                readOnly={true}
-                onChange={(e)=>{
-                    if (e.target.value.trim().length === 0) {
-                        setOpenSnackbar(true);
-                        setMessage("Title cannot be empty");
-                        return;
-                    }
-                    setTitle(e.target.value);
-                }}
-                onKeyPress={(ev) => {
-                    if (ev.key === 'Enter') {
-                        titleRef.current.blur();
-                        setDisableTitle(true);
-                       // setTitle(titleRef.current.value)
+            <NavBar inDoc={true} docId={docId} inUser={true} canShare={isAuthorized=== 1}/>
+            { isAuthorized === 0 && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
+            {isAuthorized === 2 && <div className='center'><ErrorIcon color='primary'size={60} /><Typography variant="h5">You cannot view this doc</Typography></div> }
+            { isAuthorized === 1 && <div>
+                <TextField
+                    id="standard-full-width"
+                    placeholder="   Document Title"
+                    fullWidth
+                    value={title}
+                    margin="normal"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    inputRef={titleRef}
+                    disabled={disableTitle || loading}
+                    readOnly={true}
+                    onChange={(e)=>{
+                        if (e.target.value.trim().length === 0) {
+                            setOpenSnackbar(true);
+                            setMessage("Title cannot be empty");
+                            return;
+                        }
+                        setTitle(e.target.value);
+                    }}
+                    onKeyPress={(ev) => {
+                        if (ev.key === 'Enter') {
+                            titleRef.current.blur();
+                            setDisableTitle(true);
+                        // setTitle(titleRef.current.value)
+                            uploadTitle(titleRef.current.value)
+                            // console.log("bluering")
+                        }
+                    }}
+                    onClick={()=>{
+                        setDisableTitle(false)
+                    }}
+                    onFocus={()=>{
+                        setDisableTitle(false)
+                        console.log(22)
+                    }}
+                    onBlur={()=>{
+                        setDisableTitle(true)
+                        console.log(333)
+                        // setTitle(titleRef.current.value)
                         uploadTitle(titleRef.current.value)
-                        // console.log("bluering")
                     }
-                }}
-                onClick={()=>{
-                    setDisableTitle(false)
-                }}
-                onFocus={()=>{
-                    setDisableTitle(false)
-                    console.log(22)
-                }}
-                onBlur={()=>{
-                    setDisableTitle(true)
-                    console.log(333)
-                    // setTitle(titleRef.current.value)
-                    uploadTitle(titleRef.current.value)
-                }
 
-                }
-                InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <TitleIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-            />
-            {loading && <div><LinearProgress color='primary' size={80} thickness={10} /></div> }
+                    }
+                    InputProps={{
+                        startAdornment: (
+                        <InputAdornment position="start">
+                            <TitleIcon />
+                        </InputAdornment>
+                        ),
+                    }}
+                />
+                {loading && <div><LinearProgress color='primary' size={80} thickness={10} /></div> }
 
-            <ReactQuill 
-                theme="snow"
-                onChange={uploadChanges}
-                readOnly={ loading}
-                ref={quill}
-            />
+                <ReactQuill 
+                    theme="snow"
+                    onChange={uploadChanges}
+                    readOnly={ loading}
+                    ref={quill}
+                />
+            </div> }
         </div>
     )
 
