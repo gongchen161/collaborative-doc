@@ -122,8 +122,8 @@ function Home() {
     return (
         <div>
             <NavBar inUser={true} ></NavBar>
-            {loading && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
-            { !loading && <Box m={2} pt={3}>
+            {user && loading && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
+            { user && !loading && <Box m={2} pt={3}>
                 <Box m={2} pt={3}>
                 <Typography className='center' variant="h4" > My Docs</Typography>
                 <Divider variant="middle"/>

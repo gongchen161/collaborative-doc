@@ -121,8 +121,8 @@ export default function Document() {
             
             <NavBar inDoc={true} docId={docId} inUser={true} canShare={isAuthorized=== 1}/>
             { isAuthorized === 0 && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
-            {isAuthorized === 2 && <div className='center'><ErrorIcon color='primary'size={60} /><Typography variant="h5">You cannot view this doc</Typography></div> }
-            { isAuthorized === 1 && <div>
+            {  isAuthorized === 2 && <div className='center'><ErrorIcon color='primary'size={60} /><Typography variant="h5">You cannot view this doc</Typography></div> }
+            { user && isAuthorized === 1 && <div>
                 <TextField
                     id="standard-full-width"
                     placeholder="   Document Title"
@@ -177,12 +177,12 @@ export default function Document() {
                 />
                 {loading && <div><LinearProgress color='primary' size={80} thickness={10} /></div> }
 
-                <ReactQuill 
+                { user && <ReactQuill 
                     theme="snow"
                     onChange={uploadChanges}
                     readOnly={ loading}
                     ref={quill}
-                />
+                />}
             </div> }
         </div>
     )
