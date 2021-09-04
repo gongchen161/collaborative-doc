@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/collaborative-doc/static/css/main.bdbab7d8.chunk.css",
-    "main.js": "/collaborative-doc/static/js/main.4d1e1cd7.chunk.js",
-    "main.js.map": "/collaborative-doc/static/js/main.4d1e1cd7.chunk.js.map",
-    "runtime-main.js": "/collaborative-doc/static/js/runtime-main.cd29f35a.js",
-    "runtime-main.js.map": "/collaborative-doc/static/js/runtime-main.cd29f35a.js.map",
-    "static/css/2.f83b9687.chunk.css": "/collaborative-doc/static/css/2.f83b9687.chunk.css",
-    "static/js/2.c24cd6b8.chunk.js": "/collaborative-doc/static/js/2.c24cd6b8.chunk.js",
-    "static/js/2.c24cd6b8.chunk.js.map": "/collaborative-doc/static/js/2.c24cd6b8.chunk.js.map",
-    "index.html": "/collaborative-doc/index.html",
-    "static/css/2.f83b9687.chunk.css.map": "/collaborative-doc/static/css/2.f83b9687.chunk.css.map",
-    "static/css/main.bdbab7d8.chunk.css.map": "/collaborative-doc/static/css/main.bdbab7d8.chunk.css.map",
-    "static/js/2.c24cd6b8.chunk.js.LICENSE.txt": "/collaborative-doc/static/js/2.c24cd6b8.chunk.js.LICENSE.txt"
+    "main.css": "/collaborative-note/static/css/main.bdbab7d8.chunk.css",
+    "main.js": "/collaborative-note/static/js/main.482dd35f.chunk.js",
+    "main.js.map": "/collaborative-note/static/js/main.482dd35f.chunk.js.map",
+    "runtime-main.js": "/collaborative-note/static/js/runtime-main.3f8267f4.js",
+    "runtime-main.js.map": "/collaborative-note/static/js/runtime-main.3f8267f4.js.map",
+    "static/css/2.f83b9687.chunk.css": "/collaborative-note/static/css/2.f83b9687.chunk.css",
+    "static/js/2.ea1dca25.chunk.js": "/collaborative-note/static/js/2.ea1dca25.chunk.js",
+    "static/js/2.ea1dca25.chunk.js.map": "/collaborative-note/static/js/2.ea1dca25.chunk.js.map",
+    "index.html": "/collaborative-note/index.html",
+    "static/css/2.f83b9687.chunk.css.map": "/collaborative-note/static/css/2.f83b9687.chunk.css.map",
+    "static/css/main.bdbab7d8.chunk.css.map": "/collaborative-note/static/css/main.bdbab7d8.chunk.css.map",
+    "static/js/2.ea1dca25.chunk.js.LICENSE.txt": "/collaborative-note/static/js/2.ea1dca25.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.cd29f35a.js",
+    "static/js/runtime-main.3f8267f4.js",
     "static/css/2.f83b9687.chunk.css",
-    "static/js/2.c24cd6b8.chunk.js",
+    "static/js/2.ea1dca25.chunk.js",
     "static/css/main.bdbab7d8.chunk.css",
-    "static/js/main.4d1e1cd7.chunk.js"
+    "static/js/main.482dd35f.chunk.js"
   ]
 }
