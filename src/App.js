@@ -1,6 +1,6 @@
 
 import Recat, { useState, useEffect, useRef } from 'react'
-import Document from "./components/Document";
+import Note from "./components/Note";
 import Signup from './components/Signup';
 import Login from './components/Login'
 import Home from './components/Home'
@@ -31,8 +31,8 @@ function App() {
         <Route exact path="/profile">
           <Profile />
         </Route>
-        <Route path="/doc/:docId">
-          <Document/>
+        <Route path="/note/:noteId">
+          <Note/>
         </Route>
       </Switch>
     </HashRouter>

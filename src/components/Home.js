@@ -58,11 +58,11 @@ function Home() {
     const { user, timeout, setMessage, setOpenSnackbar } = useAuth();
     const classes = useStyles();
     const history = useHistory();
-    const [myDocs, setMyDocs] = useState([]);
+    const [myNotes, setMyNotes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
-    const [deleteDocTitle, setDeleteDocTitle] = useState("");
-    const [deleteDocId, setDeleteDocId] = useState("");
+    const [deleteNoteTitle, setDeleteNoteTitle] = useState("");
+    const [deleteNoteId, setDeleteNoteId] = useState("");
     useEffect( () => {
         if (!user) {
             history.push('/login')
@@ -77,12 +77,12 @@ function Home() {
             console.log("------ fetching user from firebase")
             var childData = data.val();
             if (childData) {
-                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.docId}-misc`).on('value', function(titleData) {
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.noteId}-misc`).on('value', function(titleData) {
                     console.log("------ fetching user-title from firebase")
                     var titleChild = titleData.val();
-                    const found = myDocs.some(el => el.docId === childData.docId);
+                    const found = myNotes.some(el => el.noteId === childData.noteId);
                     if (!found) {
-                        setMyDocs(arr =>[...arr, {...titleChild, docId : childData.docId}].sort((a, b) =>{
+                        setMyNotes(arr =>[...arr, {...titleChild, noteId : childData.noteId}].sort((a, b) =>{
                             return a.createdTime < b.createdTime;
                         }))
                     }
@@ -91,55 +91,55 @@ function Home() {
 
         })
 
-        console.log(myDocs)
+        console.log(myNotes)
        
         setTimeout( ()=>setLoading(false), 1000);
 
       }, [])
     console.log("home page rendering")
 
-    const confirmDeleteDoc = (open, title, docId) => {
+    const confirmDeleteNote = (open, title, noteId) => {
         setOpenDeleteConfirm(open); 
-        setDeleteDocTitle(title);
-        setDeleteDocId(docId);
+        setDeleteNoteTitle(title);
+        setDeleteNoteId(noteId);
     }
 
-    const deleteDocAction = async () => {
+    const deleteNoteAction = async () => {
         try {
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(deleteDocId).remove();
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(deleteNoteId).remove();
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
-            confirmDeleteDoc(false, "", "")
+            confirmDeleteNote(false, "", "")
             return
         }
-        setMyDocs(arr =>[...arr].filter(obj=>obj.docId !== deleteDocId).sort((a, b) =>{
+        setMyNotes(arr =>[...arr].filter(obj=>obj.noteId !== deleteNoteId).sort((a, b) =>{
             return a.createdTime < b.createdTime;
         }))
-        confirmDeleteDoc(false, "", "")
+        confirmDeleteNote(false, "", "")
     }
 
     return (
         <div>
             <NavBar inUser={true} ></NavBar>
-            {user && loading && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
+            {user && loading && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Notes...</Typography></div> }
             { user && !loading && <Box m={2} pt={3}>
                 <Box m={2} pt={3}>
-                <Typography className='center' variant="h4" > My Docs</Typography>
+                <Typography className='center' variant="h4" > My Notes</Typography>
                 <Divider variant="middle"/>
                 </Box>
                 <Grid container spacing={3}>
-                {(myDocs.length === 0 || !myDocs.some(el => el.createdBy === user.email)) ? <Typography variant="h5" >No docs found</Typography> :
-                [...myDocs].map((x, i) => 
+                {(myNotes.length === 0 || !myNotes.some(el => el.createdBy === user.email)) ? <Typography variant="h5" >No notes found</Typography> :
+                [...myNotes].map((x, i) => 
                     x.createdBy === user.email &&
-                    <Grid item xs={4} key={x.docId}>
+                    <Grid item xs={4} key={x.noteId}>
                         <Card className={classes.root}>
                             <CardContent   className={classes.paper}> 
                                 <Typography className={classes.relativeDiv}>
                                     <AssignmentIcon className={classes.leftIcon} color='primary' /> 
-                                    <Button  onClick={()=>{confirmDeleteDoc(true, x.title, x.docId)}}className={classes.rightIcon}><DeleteForeverIcon  color="primary"/></Button>
+                                    <Button  onClick={()=>{confirmDeleteNote(true, x.title, x.noteId)}}className={classes.rightIcon}><DeleteForeverIcon  color="primary"/></Button>
                                 </Typography>
-                                <CardActionArea component={Link} to={`/doc/${x.docId}`}>    
+                                <CardActionArea component={Link} to={`/note/${x.noteId}`}>    
                                         <Typography variant="h5" > {x.title}</Typography>
                                         <Typography variant="body1" > {" "}</Typography>
                                         <Typography variant="caption" > {new Date(x.createdTime).toString()}</Typography>
@@ -150,23 +150,23 @@ function Home() {
                 )}
                 </Grid>
                 <Box m={2} pt={3}>
-                <Typography className='center' variant="h4" > Docs shared to me</Typography>
+                <Typography className='center' variant="h4" > Notes shared with me</Typography>
                 <Divider variant="middle" />
                 </Box>
                 
                 <Grid container spacing={3}>
-                {(myDocs.length === 0 || !myDocs.some(el => el.createdBy !== user.email)) ? <Typography variant="h5" >No docs found</Typography> :
-                [...myDocs].map((x, i) => 
+                {(myNotes.length === 0 || !myNotes.some(el => el.createdBy !== user.email)) ? <Typography variant="h5" >No notes found</Typography> :
+                [...myNotes].map((x, i) => 
                     x.createdBy !== user.email &&
-                    <Grid item xs={4} key={x.docId}>
+                    <Grid item xs={4} key={x.noteId}>
                         <Card className={classes.root}>
                         <CardContent   className={classes.paper}> 
                                <Typography className={classes.relativeDiv}>
                                     <AssignmentIcon className={classes.leftIcon} color='primary' /> 
-                                    <Button  onClick={()=>{confirmDeleteDoc(true, x.title, x.docId)}}className={classes.rightIcon}><DeleteForeverIcon  color="primary"/></Button>
+                                    <Button  onClick={()=>{confirmDeleteNote(true, x.title, x.noteId)}}className={classes.rightIcon}><DeleteForeverIcon  color="primary"/></Button>
                                 </Typography>
 
-                            <CardActionArea component={Link} to={`/doc/${x.docId}`}>
+                            <CardActionArea component={Link} to={`/note/${x.noteId}`}>
                             
                                 <Typography variant="h5" > {x.title}</Typography>
                                 <Typography variant="body1" > From: {x.createdBy}</Typography>
@@ -182,18 +182,18 @@ function Home() {
 
             </Box> }
 
-            <Dialog open={openDeleteConfirm} onClose={()=>{confirmDeleteDoc(false, "", "")}} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Deleting Doc</DialogTitle>
+            <Dialog open={openDeleteConfirm} onClose={()=>{confirmDeleteNote(false, "", "")}} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Deleting Note</DialogTitle>
                 <DialogContent>
                 <DialogContentText className='center'>
-                    Delete {deleteDocTitle} ?
+                    Delete {deleteNoteTitle} ?
                 </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={()=>{confirmDeleteDoc(false, "", "")}} color="primary">
+                <Button onClick={()=>{confirmDeleteNote(false, "", "")}} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={()=>{deleteDocAction()}} color="primary">
+                <Button onClick={()=>{deleteNoteAction()}} color="primary">
                     Delete
                 </Button>
                 </DialogActions>

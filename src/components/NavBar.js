@@ -47,15 +47,15 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function NavBar({inDoc, docId, inUser, canShare}) {
+export default function NavBar({inNote, noteId, inUser, canShare}) {
 
     const classes = useStyles();
     const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
-    const [openShareDocForm, setOpenShareDocForm] = useState(false);
+    const [openShareNoteForm, setOpenShareNoteForm] = useState(false);
     const { openSnackbar, setOpenSnackbar, message, setMessage, user, timeout } = useAuth()
     const shareEmailRef = useRef();
-    const [isCreatingNewDoc, setIsCreatingNewDoc] = useState(false);
+    const [isCreatingNewNote, setIsCreatingNewNote] = useState(false);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -82,48 +82,48 @@ export default function NavBar({inDoc, docId, inUser, canShare}) {
         history.push("/profile")
       };
 
-      const startShareDoc = () =>{
-          setOpenShareDocForm(true);
+      const startShareNote = () =>{
+          setOpenShareNoteForm(true);
       }
 
-      const endShareDoc = () => {
-          setOpenShareDocForm(false);
+      const endShareNote = () => {
+          setOpenShareNoteForm(false);
       }
 
 
-      const processShareDoc = () => {
+      const processShareNote = () => {
         try {
-            console.log("++++++ processShareDoc from firebase")
+            console.log("++++++ processShareNote from firebase")
          
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(docId).update({docId:docId});
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({noteId:noteId});
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
             console.log("error loading from firebse", e)
         }
 
-        setOpenShareDocForm(false);
+        setOpenShareNoteForm(false);
     }
 
-    const goToNewDoc = async (e) => {
-        const docId = uuid();
+    const goToNewNote = async (e) => {
+        const noteId = uuid();
         try {
-            setIsCreatingNewDoc(true);
-            console.log("++++++ creating doc to firebase")
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(docId).update({docId:docId});
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({ createdBy: user.email , createdTime: new Date().getTime(), title : "Untitled" } );
+            setIsCreatingNewNote(true);
+            console.log("++++++ creating note to firebase")
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(noteId).update({noteId:noteId});
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({ createdBy: user.email , createdTime: new Date().getTime(), title : "Untitled" } );
         } catch (e) {
             await timeout(1500)
-            setIsCreatingNewDoc(false);
+            setIsCreatingNewNote(false);
             setOpenSnackbar(true)
-            setMessage("Error on creating a new document");
+            setMessage("Error on creating a new Note");
             return;
         }
 
         await timeout(500);
 
-        setIsCreatingNewDoc(false);
-        history.push(`/doc/${docId}`)
+        setIsCreatingNewNote(false);
+        history.push(`/note/${noteId}`)
     }
     return (
         <AppBar position="static" color="primary">
@@ -141,12 +141,12 @@ export default function NavBar({inDoc, docId, inUser, canShare}) {
             <Button component={Link} to="/home" color="inherit"> <HomeIcon /></Button>   
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-            Collaborative Doc
+            Collaborative Note
             </Typography>
              {!inUser && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
-             {inUser && !inDoc && <Button onClick={goToNewDoc} color="inherit"> <AddCircleIcon/>   Create A New Doc</Button>}
-             {inUser && inDoc && canShare && <Button onClick={startShareDoc} color="inherit"> 
-                    <ShareIcon/>   Share Doc
+             {inUser && !inNote && <Button onClick={goToNewNote} color="inherit"> <AddCircleIcon/>   Create A New Note</Button>}
+             {inUser && inNote && canShare && <Button onClick={startShareNote} color="inherit"> 
+                    <ShareIcon/>   Share Note
                     
                     </Button>}
              {inUser && <div>
@@ -165,8 +165,8 @@ export default function NavBar({inDoc, docId, inUser, canShare}) {
                 </Menu>
                 </div>
              }
-             <Dialog open={openShareDocForm} onClose={endShareDoc} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Share Doc</DialogTitle>
+             <Dialog open={openShareNoteForm} onClose={endShareNote} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Share Note</DialogTitle>
                 <DialogContent>
                 <DialogContentText>
                     To share, please enter the email
@@ -182,20 +182,20 @@ export default function NavBar({inDoc, docId, inUser, canShare}) {
                 />
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={endShareDoc} color="primary">
+                <Button onClick={endShareNote} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={processShareDoc} color="primary">
+                <Button onClick={processShareNote} color="primary">
                     Share
                 </Button>
                 </DialogActions>
             </Dialog>
             
-            <Dialog open={isCreatingNewDoc} onClose={()=>{setIsCreatingNewDoc(false)}} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Creating Doc</DialogTitle>
+            <Dialog open={isCreatingNewNote} onClose={()=>{setIsCreatingNewNote(false)}} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Creating Note</DialogTitle>
                 <DialogContent>
                 <DialogContentText className='center'>
-                    Creating New Doc... Please wait...
+                    Creating New Note... Please wait...
                     <CircularProgress  />
                 </DialogContentText>
                 </DialogContent>

@@ -21,7 +21,7 @@ import Share from '@material-ui/icons/Share';
             <div className={classes.center}>
 
                 <NoteAddIcon color='primary' className={classes.icon} /> 
-                <Typography component="h1" variant="h5"  >Create a doc</Typography>
+                <Typography component="h1" variant="h5"  >Create a note</Typography>
                 <Divider variant="inset" className={classes.divider} />
 
                 <Share color='primary' className={classes.icon}  /> 

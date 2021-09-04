@@ -36,7 +36,7 @@ function Profile() {
     const { user } = useAuth();
     const classes = useStyles();
     const history = useHistory();
-    const [myDocs, setMyDocs] = useState([]);
+    const [myNotes, setMyNotes] = useState([]);
 
     useEffect(() => {
         if (!user) {

@@ -1,6 +1,6 @@
-# Collaborative Doc
+# Collaborative Note
 
-* Live @ https://gongchen161.github.io/collaborative-doc
+* Live @ https://gongchen161.github.io/collaborative-note
 
 * Use Firebase Authentication for logging in and signing up
-* Create a new document, share it with your friend, and edit it together
+* Create a new note, share it with someone, and study together

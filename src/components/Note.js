@@ -26,12 +26,12 @@ import uuid from 'react-uuid'
 import SHA256 from "crypto-js/sha256";
 import { IsoTwoTone } from '@material-ui/icons';
 
-export default function Document() {
+export default function Note() {
 
     const quill = useRef();
     const [text, setText] = useState("");
     const [title, setTitle] = useState("Untitled");
-    const { docId } = useParams();
+    const { noteId } = useParams();
     const [sessionId, setSessionId] = useState(uuid());
 
     const [isAuthorized, setIsAuthorized] = useState(0);
@@ -58,7 +58,7 @@ export default function Document() {
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function(data) {
                 console.log("------ fetching user from firebase")
                 var childData = data.val();
-                if (childData && childData.docId === docId) {
+                if (childData && childData.noteId === noteId) {
                     result = 1;
                 }
     
@@ -77,7 +77,7 @@ export default function Document() {
 
 
 
-             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).on('child_added', function(data) {
+             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).on('child_added', function(data) {
                 console.log("------ fetching content from firebase")
                 var childData = data.val();
                 if (quill && quill.current && childData.sessionId !== sessionId) {
@@ -86,7 +86,7 @@ export default function Document() {
                 }
             })
 
-             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).on('value', function(data){
+             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function(data){
                 console.log("------ fetching title from firebase")
                 var childData = data.val();
                 setTitle(childData.title);
@@ -104,7 +104,7 @@ export default function Document() {
             return;
         }
         console.log("++++++ uploading delta to firebase")
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-content`).push({ sessionId: sessionId , delta : delta } );
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).push({ sessionId: sessionId , delta : delta } );
     }
 
 
@@ -113,19 +113,19 @@ export default function Document() {
             return;
         }
         console.log("++++++ uploading title to firebase")
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${docId}-misc`).update({title : text});
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({title : text});
     }
 
     return (
         <div>
             
-            <NavBar inDoc={true} docId={docId} inUser={true} canShare={isAuthorized=== 1}/>
-            { isAuthorized === 0 && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Docs...</Typography></div> }
-            {  isAuthorized === 2 && <div className='center'><ErrorIcon color='primary'size={60} /><Typography variant="h5">You cannot view this doc</Typography></div> }
+            <NavBar inNote={true} noteId={noteId} inUser={true} canShare={isAuthorized=== 1}/>
+            { isAuthorized === 0 && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Notes...</Typography></div> }
+            {  isAuthorized === 2 && <div className='center'><ErrorIcon color='primary'size={60} /><Typography variant="h5">You cannot view this note</Typography></div> }
             { user && isAuthorized === 1 && <div>
                 <TextField
                     id="standard-full-width"
-                    placeholder="   Document Title"
+                    placeholder="   Note Title"
                     fullWidth
                     value={title}
                     margin="normal"
