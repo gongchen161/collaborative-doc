@@ -29,7 +29,7 @@ import Share from '@material-ui/icons/Share';
                 <Divider variant="inset" className={classes.divider}/>
                 
                 <GroupIcon color='primary' className={classes.icon}  /> 
-                <Typography component="h1" variant="h5"  >Edit Together</Typography>
+                <Typography component="h1" variant="h5"  >Edit and study together</Typography>
                 <Divider variant="inset" className={classes.divider}/>
             </div>
         </Container>
