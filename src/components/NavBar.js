@@ -71,7 +71,6 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
             await auth.signOut();
             history.push('/login')
         } catch (e) {
-            console.log(e);
             setMessage(e.message);
             setOpenSnackbar(true);
         }
@@ -93,13 +92,11 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
 
       const processShareNote = () => {
         try {
-            console.log("++++++ processShareNote from firebase")
          
             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({noteId:noteId});
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
-            console.log("error loading from firebse", e)
         }
 
         setOpenShareNoteForm(false);
@@ -109,7 +106,6 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
         const noteId = uuid();
         try {
             setIsCreatingNewNote(true);
-            console.log("++++++ creating note to firebase")
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(noteId).update({noteId:noteId});
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({ createdBy: user.email , createdTime: new Date().getTime(), title : "Untitled" } );
         } catch (e) {

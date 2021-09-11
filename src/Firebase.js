@@ -12,11 +12,10 @@ export const firebaseConfig = {
 
 try {
     if(!firebase.apps.length) {
-        console.log("initializing firebase");
         firebase.initializeApp(firebaseConfig)
     } 
 } catch (e) {
-    console.log("error initializing firebase", e);
+
 }
 export default firebase;
 export const auth = firebase.auth();

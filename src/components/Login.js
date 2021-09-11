@@ -40,7 +40,6 @@ import { useHistory } from 'react-router-dom';
             await auth.signInWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
             history.push('/home')
         } catch (e) {
-            console.log(e);
             setMessage(e.message);
             setOpenSnackbar(true);
         }

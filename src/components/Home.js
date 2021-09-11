@@ -68,17 +68,11 @@ function Home() {
             history.push('/login')
             return;
         }
-
-        console.log("start loading")
         setLoading(true)
-        console.log("done loading")
-
         firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function(data) {
-            console.log("------ fetching user from firebase")
             var childData = data.val();
             if (childData) {
                 firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.noteId}-misc`).on('value', function(titleData) {
-                    console.log("------ fetching user-title from firebase")
                     var titleChild = titleData.val();
                     const found = myNotes.some(el => el.noteId === childData.noteId);
                     if (!found) {
@@ -90,13 +84,10 @@ function Home() {
             }
 
         })
-
-        console.log(myNotes)
        
         setTimeout( ()=>setLoading(false), 1000);
 
       }, [])
-    console.log("home page rendering")
 
     const confirmDeleteNote = (open, title, noteId) => {
         setOpenDeleteConfirm(open); 

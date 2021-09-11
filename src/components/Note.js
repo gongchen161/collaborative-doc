@@ -56,7 +56,6 @@ export default function Note() {
         try {
             let result = 0;
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function(data) {
-                console.log("------ fetching user from firebase")
                 var childData = data.val();
                 if (childData && childData.noteId === noteId) {
                     result = 1;
@@ -78,7 +77,6 @@ export default function Note() {
 
 
              firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).on('child_added', function(data) {
-                console.log("------ fetching content from firebase")
                 var childData = data.val();
                 if (quill && quill.current && childData.sessionId !== sessionId) {
                     const editor = quill.current.getEditor();
@@ -87,13 +85,11 @@ export default function Note() {
             })
 
              firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function(data){
-                console.log("------ fetching title from firebase")
                 var childData = data.val();
                 setTitle(childData.title);
                 
             })
         } catch (e) {
-            console.log("error loading from firebse", e)
         }
 
         setTimeout( () => setLoading(false), 1000);
@@ -103,7 +99,6 @@ export default function Note() {
         if (source !== 'user') {
             return;
         }
-        console.log("++++++ uploading delta to firebase")
         firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).push({ sessionId: sessionId , delta : delta } );
     }
 
@@ -112,7 +107,6 @@ export default function Note() {
         if (!text || text.trim().length === 0) {
             return;
         }
-        console.log("++++++ uploading title to firebase")
         firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({title : text});
     }
 
@@ -149,7 +143,6 @@ export default function Note() {
                             setDisableTitle(true);
                         // setTitle(titleRef.current.value)
                             uploadTitle(titleRef.current.value)
-                            // console.log("bluering")
                         }
                     }}
                     onClick={()=>{
@@ -157,11 +150,9 @@ export default function Note() {
                     }}
                     onFocus={()=>{
                         setDisableTitle(false)
-                        console.log(22)
                     }}
                     onBlur={()=>{
                         setDisableTitle(true)
-                        console.log(333)
                         // setTitle(titleRef.current.value)
                         uploadTitle(titleRef.current.value)
                     }
