@@ -2,5 +2,5 @@
 
 * Live @ https://gongchen161.github.io/collaborative-note
 
-* Use Firebase Authentication for logging in and signing up
-* Create a new note, share it with someone, and study together
+* Designed the frontend using ReactJS and Material-UI
+* Utilized Firebase Realtime Database for storing content and Firebase Authentication for logins and signups
