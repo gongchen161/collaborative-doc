@@ -37,49 +37,49 @@ export default function Note() {
         if (!user) {
             history.push('/login')
         }
-    }, [])
+    }, [user])
 
 
     // Initialize Firebase
-    useEffect(async () => {
+    useEffect( () => {
         setLoading(true)
         setIsAuthorized(0)
         try {
-            let result = 0;
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function (data) {
-                var childData = data.val();
-                if (childData && childData.noteId === noteId) {
-                    result = 1;
+            const getInfo = async () => {
+                let result = 0;
+                await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).once('child_added', await function (data) {
+                    var childData = data.val();
+                    if (childData && childData.noteId === noteId) {
+                        result = 1;
+                    }
+
+                })
+
+                if (result !== 1) {
+                    result = 2;
                 }
 
-            })
+                setIsAuthorized(result);
 
-
-            if (result !== 1) {
-                result = 2;
-            }
-
-            setIsAuthorized(result);
-
-            if (result === 2) {
-                return;
-            }
-
-
-
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).on('child_added', function (data) {
-                var childData = data.val();
-                if (quill && quill.current && childData.sessionId !== sessionId) {
-                    const editor = quill.current.getEditor();
-                    editor.updateContents(childData.delta);
+                if (result === 2) {
+                    return;
                 }
-            })
 
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function (data) {
-                var childData = data.val();
-                setTitle(childData.title);
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).on('child_added', function (data) {
+                    var childData = data.val();
+                    if (quill && quill.current && childData.sessionId !== sessionId) {
+                        const editor = quill.current.getEditor();
+                        editor.updateContents(childData.delta);
+                    }
+                })
 
-            })
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function (data) {
+                    var childData = data.val();
+                    setTitle(childData.title);
+
+                })
+            };
+            getInfo();
         } catch (e) {
         }
 

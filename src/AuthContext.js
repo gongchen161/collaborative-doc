@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect, useContext } from 'react'
-import { auth } from './Firebase';
+import {firebaseAuth} from './Firebase';
 import { makeStyles } from '@material-ui/core/styles';
 
 const AuthContext = React.createContext();
@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState();
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [message, setMessage] = useState("");
+  const [firebaseInitDone, setFirebaseInitDone] = useState(false)
 
   function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -71,8 +72,10 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const cleanup = auth.onAuthStateChanged((u) => {
+    console.log("CC")
+    const cleanup = firebaseAuth.onAuthStateChanged((u) => {
       setUser(u);
+      setFirebaseInitDone(true)
     })
     return cleanup;
   }, [])
@@ -80,7 +83,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {firebaseInitDone && children}
     </AuthContext.Provider>
 
   )

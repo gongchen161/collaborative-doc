@@ -85,7 +85,7 @@ function Home() {
 
         setTimeout(() => setLoading(false), 1000);
 
-    }, [])
+    }, [user])
 
     const confirmDeleteNote = (open, title, noteId) => {
         setOpenDeleteConfirm(open);

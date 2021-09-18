@@ -1,36 +1,38 @@
-
+import { useState, useEffect } from "react";
 import Note from "./components/Note";
 import Signup from './components/Signup';
 import Login from './components/Login'
 import Home from './components/Home'
+import Loading from "./components/Loading";
 import Profile from './components/Profile'
-import { HashRouter, Switch, Route, Redirect } from "react-router-dom"
+import { HashRouter, Switch, Redirect } from "react-router-dom"
+import RouteWrapper from "./RouteWrapper";
 import { AuthProvider } from './AuthContext';
-
 function App() {
+
 
   return (
     <AuthProvider>
       <HashRouter>
         <Switch>
-          <Route exact path="/">
+          <RouteWrapper exact path="/">
             <Redirect to={`/home`} />
-          </Route>
-          <Route exact path="/signup">
+          </RouteWrapper>
+          <RouteWrapper exact path="/signup">
             <Signup />
-          </Route>
-          <Route exact path="/login">
+          </RouteWrapper>
+          <RouteWrapper exact path="/login">
             <Login />
-          </Route>
-          <Route exact path="/home">
+          </RouteWrapper>
+          <RouteWrapper exact path="/home">
             <Home />
-          </Route>
-          <Route exact path="/profile">
+          </RouteWrapper>
+          <RouteWrapper exact path="/profile">
             <Profile />
-          </Route>
-          <Route path="/note/:noteId">
+          </RouteWrapper>
+          <RouteWrapper path="/note/:noteId">
             <Note />
-          </Route>
+          </RouteWrapper>
         </Switch>
       </HashRouter>
 

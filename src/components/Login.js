@@ -9,7 +9,7 @@ import Container from '@material-ui/core/Container';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import NavBar from './NavBar';
 import Intro from './Intro'
-import { auth } from '../Firebase';
+import { firebaseAuth } from '../Firebase';
 
 import { useAuth, useStyles } from '../AuthContext';
 
@@ -31,12 +31,12 @@ export default function Login() {
         if (user) {
             history.push('/home')
         }
-    }, [])
+    }, [user])
     const login = async (e) => {
         e.preventDefault();
 
         try {
-            await auth.signInWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
+            await firebaseAuth.signInWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
             history.push('/home')
         } catch (e) {
             setMessage(e.message);

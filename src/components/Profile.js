@@ -17,7 +17,7 @@ function Profile() {
       history.push('/login')
       return;
     }
-  }, [])
+  }, [user])
 
   return (
 

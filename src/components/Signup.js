@@ -11,7 +11,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 import NavBar from './NavBar';
 import Intro from './Intro';
-import { auth } from '../Firebase';
+import { firebaseAuth } from '../Firebase';
 
 import { useAuth, useStyles } from '../AuthContext';
 import { useHistory } from 'react-router-dom';
@@ -32,7 +32,7 @@ export default function SignUp() {
     if (user) {
       history.push('/home')
     }
-  }, [])
+  }, [user])
 
 
 
@@ -44,7 +44,7 @@ export default function SignUp() {
       return;
     }
     try {
-      await auth.createUserWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
+      await firebaseAuth.createUserWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
       history.push('/home')
     } catch (e) {
       setMessage(e.message);

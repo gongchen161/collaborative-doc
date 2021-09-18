@@ -21,7 +21,7 @@ import { useHistory } from 'react-router-dom';
 import HomeIcon from '@material-ui/icons/Home';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { auth } from '../Firebase';
+import { firebaseAuth } from '../Firebase';
 import ShareIcon from '@material-ui/icons/Share';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -61,10 +61,10 @@ export default function NavBar({ inNote, noteId, inUser, canShare }) {
         setAnchorEl(null);
     };
 
-    const handleSignout = async () => {
+    const handleSignout = () => {
         setAnchorEl(null);
         try {
-            await auth.signOut();
+            firebaseAuth.signOut();
             history.push('/login')
         } catch (e) {
             setMessage(e.message);
@@ -72,7 +72,7 @@ export default function NavBar({ inNote, noteId, inUser, canShare }) {
         }
     };
 
-    const goToProfile = async () => {
+    const goToProfile = () => {
         setAnchorEl(null);
         history.push("/profile")
     };
