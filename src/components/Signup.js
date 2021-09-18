@@ -19,118 +19,115 @@ import { useHistory } from 'react-router-dom';
 
 
 export default function SignUp() {
-    const classes = useStyles();
-  
-    const emailRef = useRef();
-    const passwordRef = useRef();
-    const password2Ref = useRef();
+  const classes = useStyles();
 
-    const { setOpenSnackbar, setMessage, user } = useAuth()
-    const history = useHistory();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const password2Ref = useRef();
 
-    useEffect(() => {
-        if (user) {
-            history.push('/home')
-        }
-      }, [])
+  const { setOpenSnackbar, setMessage, user } = useAuth()
+  const history = useHistory();
 
-   
-
-    const signUp = async (e) => {
-        e.preventDefault();
-        if (passwordRef.current.value !== password2Ref.current.value) {
-            setMessage("password does not match");
-            setOpenSnackbar(true);
-            return;
-        }
-        try {
-            await auth.createUserWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
-            history.push('/home')
-        } catch (e) {
-            setMessage(e.message);
-            setOpenSnackbar(true);
-        }
+  useEffect(() => {
+    if (user) {
+      history.push('/home')
     }
+  }, [])
 
-    return (
-        <div>
 
-              <NavBar />
-              <div className={classes.left}>
-                <Intro />
-              </div>
-              <div className={classes.right}>
-                <Container component="main" maxWidth="lg" >
-                <CssBaseline />
-                    <div className={classes.center}>
-                      <AccountCircleIcon className={classes.icon} color='primary' />
-                    <Typography component="h1" variant="h5">
-                    Sign Up
-                    </Typography>
-                    <form className={classes.form} noValidate>
-                        <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  inputRef={emailRef}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  inputRef={passwordRef}
-                />
-              </Grid>
 
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password2"
-                  label="Confirm Password"
-                  type="password"
-                  id="password2"
-                  inputRef={password2Ref}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={ signUp }
-            >
-              Sign Up
-            </Button>
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="#/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-      </Container>
-</div>
-
-      </div>
-    );
+  const signUp = async (e) => {
+    e.preventDefault();
+    if (passwordRef.current.value !== password2Ref.current.value) {
+      setMessage("password does not match");
+      setOpenSnackbar(true);
+      return;
+    }
+    try {
+      await auth.createUserWithEmailAndPassword(emailRef.current.value, passwordRef.current.value);
+      history.push('/home')
+    } catch (e) {
+      setMessage(e.message);
+      setOpenSnackbar(true);
+    }
   }
-  
+
+  return (
+    <div>
+      <NavBar />
+      <div className={classes.left}>
+        <Intro />
+      </div>
+      <div className={classes.right}>
+        <Container component="main" maxWidth="lg" >
+          <CssBaseline />
+          <div className={classes.center}>
+            <AccountCircleIcon className={classes.icon} color='primary' />
+            <Typography component="h1" variant="h5">
+              Sign Up
+            </Typography>
+            <form className={classes.form} noValidate>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    inputRef={emailRef}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="current-password"
+                    inputRef={passwordRef}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    variant="outlined"
+                    required
+                    fullWidth
+                    name="password2"
+                    label="Confirm Password"
+                    type="password"
+                    id="password2"
+                    inputRef={password2Ref}
+                  />
+                </Grid>
+              </Grid>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                onClick={signUp}
+              >
+                Sign Up
+              </Button>
+              <Grid container justifyContent="flex-end">
+                <Grid item>
+                  <Link href="#/login" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Grid>
+              </Grid>
+            </form>
+          </div>
+        </Container>
+      </div>
+    </div>
+  );
+}

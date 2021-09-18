@@ -1,18 +1,11 @@
-import Recat, { useState, useEffect, useRef, createRef } from 'react'
+import { useState, useEffect, useRef, createRef } from 'react'
 import { useParams } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import '../styles.css'
 import firebase from '../Firebase';
 
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Button from '@material-ui/core/Button';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TitleIcon from '@material-ui/icons/Title';
@@ -24,21 +17,19 @@ import { useHistory } from 'react-router-dom';
 import { CircularProgress, LinearProgress } from '@material-ui/core';
 import uuid from 'react-uuid'
 import SHA256 from "crypto-js/sha256";
-import { IsoTwoTone } from '@material-ui/icons';
 
 export default function Note() {
 
     const quill = useRef();
-    const [text, setText] = useState("");
     const [title, setTitle] = useState("Untitled");
     const { noteId } = useParams();
-    const [sessionId, setSessionId] = useState(uuid());
+    const [sessionId] = useState(uuid());
 
     const [isAuthorized, setIsAuthorized] = useState(0);
 
     const titleRef = createRef();
     const [disableTitle, setDisableTitle] = useState(false)
-    const { user, setOpenSnackbar, setMessage, timeout } = useAuth()
+    const { user, setOpenSnackbar, setMessage } = useAuth()
     const history = useHistory();
     const [loading, setLoading] = useState(false);
 
@@ -47,23 +38,23 @@ export default function Note() {
             history.push('/login')
         }
     }, [])
-    
-   
+
+
     // Initialize Firebase
-    useEffect( async () => {
+    useEffect(async () => {
         setLoading(true)
         setIsAuthorized(0)
         try {
             let result = 0;
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function(data) {
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function (data) {
                 var childData = data.val();
                 if (childData && childData.noteId === noteId) {
                     result = 1;
                 }
-    
+
             })
 
-          
+
             if (result !== 1) {
                 result = 2;
             }
@@ -76,7 +67,7 @@ export default function Note() {
 
 
 
-             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).on('child_added', function(data) {
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).on('child_added', function (data) {
                 var childData = data.val();
                 if (quill && quill.current && childData.sessionId !== sessionId) {
                     const editor = quill.current.getEditor();
@@ -84,22 +75,22 @@ export default function Note() {
                 }
             })
 
-             firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function(data){
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function (data) {
                 var childData = data.val();
                 setTitle(childData.title);
-                
+
             })
         } catch (e) {
         }
 
-        setTimeout( () => setLoading(false), 1000);
+        setTimeout(() => setLoading(false), 1000);
     }, []);
 
     const uploadChanges = (content, delta, source, editor) => {
         if (source !== 'user') {
             return;
         }
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).push({ sessionId: sessionId , delta : delta } );
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-content`).push({ sessionId: sessionId, delta: delta });
     }
 
 
@@ -107,16 +98,16 @@ export default function Note() {
         if (!text || text.trim().length === 0) {
             return;
         }
-        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({title : text});
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({ title: text });
     }
 
     return (
         <div>
-            
-            <NavBar inNote={true} noteId={noteId} inUser={true} canShare={isAuthorized=== 1}/>
-            { isAuthorized === 0 && <div className='center'><CircularProgress color='primary'size={60} /><Typography variant="h5">Loading Notes...</Typography></div> }
-            {  isAuthorized === 2 && <div className='center'><ErrorIcon color='primary'size={60} /><Typography variant="h5">You cannot view this note</Typography></div> }
-            { user && isAuthorized === 1 && <div>
+
+            <NavBar inNote={true} noteId={noteId} inUser={true} canShare={isAuthorized === 1} />
+            {isAuthorized === 0 && <div className='center'><CircularProgress color='primary' size={60} /><Typography variant="h5">Loading Notes...</Typography></div>}
+            {isAuthorized === 2 && <div className='center'><ErrorIcon color='primary' size={60} /><Typography variant="h5">You cannot view this note</Typography></div>}
+            {user && isAuthorized === 1 && <div>
                 <TextField
                     id="standard-full-width"
                     placeholder="   Note Title"
@@ -129,7 +120,7 @@ export default function Note() {
                     inputRef={titleRef}
                     disabled={disableTitle || loading}
                     readOnly={true}
-                    onChange={(e)=>{
+                    onChange={(e) => {
                         if (e.target.value.trim().length === 0) {
                             setOpenSnackbar(true);
                             setMessage("Title cannot be empty");
@@ -141,17 +132,17 @@ export default function Note() {
                         if (ev.key === 'Enter') {
                             titleRef.current.blur();
                             setDisableTitle(true);
-                        // setTitle(titleRef.current.value)
+                            // setTitle(titleRef.current.value)
                             uploadTitle(titleRef.current.value)
                         }
                     }}
-                    onClick={()=>{
+                    onClick={() => {
                         setDisableTitle(false)
                     }}
-                    onFocus={()=>{
+                    onFocus={() => {
                         setDisableTitle(false)
                     }}
-                    onBlur={()=>{
+                    onBlur={() => {
                         setDisableTitle(true)
                         // setTitle(titleRef.current.value)
                         uploadTitle(titleRef.current.value)
@@ -160,21 +151,21 @@ export default function Note() {
                     }
                     InputProps={{
                         startAdornment: (
-                        <InputAdornment position="start">
-                            <TitleIcon />
-                        </InputAdornment>
+                            <InputAdornment position="start">
+                                <TitleIcon />
+                            </InputAdornment>
                         ),
                     }}
                 />
-                {loading && <div><LinearProgress color='primary' size={80} thickness={10} /></div> }
+                {loading && <div><LinearProgress color='primary' size={80} thickness={10} /></div>}
 
-                { user && <ReactQuill 
+                {user && <ReactQuill
                     theme="snow"
                     onChange={uploadChanges}
-                    readOnly={ loading}
+                    readOnly={loading}
                     ref={quill}
                 />}
-            </div> }
+            </div>}
         </div>
     )
 

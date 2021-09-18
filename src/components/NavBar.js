@@ -1,6 +1,4 @@
-import Recat, { useState, useEffect, useRef, createRef } from 'react'
-import { useParams } from "react-router-dom";
-import ReactQuill from 'react-quill';
+import  { useState, useRef } from 'react'
 import 'react-quill/dist/quill.snow.css';
 import '../styles.css'
 import firebase from '../Firebase';
@@ -14,8 +12,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TitleIcon from '@material-ui/icons/Title';
 import Snackbar from '@material-ui/core/Snackbar';
 import { useAuth } from '../AuthContext';
 import { Link } from 'react-router-dom';
@@ -37,17 +33,17 @@ import { CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      flexGrow: 1,
+        flexGrow: 1,
     },
     menuButton: {
-      marginRight: theme.spacing(2),
+        marginRight: theme.spacing(2),
     },
     title: {
-      flexGrow: 1,
+        flexGrow: 1,
     },
-  }));
+}));
 
-export default function NavBar({inNote, noteId, inUser, canShare}) {
+export default function NavBar({ inNote, noteId, inUser, canShare }) {
 
     const classes = useStyles();
     const history = useHistory();
@@ -59,13 +55,13 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
-      };
-    
-      const handleClose = () => {
-        setAnchorEl(null);
-      };
+    };
 
-      const handleSignout = async () => {
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleSignout = async () => {
         setAnchorEl(null);
         try {
             await auth.signOut();
@@ -74,26 +70,26 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
             setMessage(e.message);
             setOpenSnackbar(true);
         }
-      };
+    };
 
-      const goToProfile = async () => {
+    const goToProfile = async () => {
         setAnchorEl(null);
         history.push("/profile")
-      };
+    };
 
-      const startShareNote = () =>{
-          setOpenShareNoteForm(true);
-      }
+    const startShareNote = () => {
+        setOpenShareNoteForm(true);
+    }
 
-      const endShareNote = () => {
-          setOpenShareNoteForm(false);
-      }
+    const endShareNote = () => {
+        setOpenShareNoteForm(false);
+    }
 
 
-      const processShareNote = () => {
+    const processShareNote = () => {
         try {
-         
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({noteId:noteId});
+
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({ noteId: noteId });
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
@@ -106,8 +102,8 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
         const noteId = uuid();
         try {
             setIsCreatingNewNote(true);
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(noteId).update({noteId:noteId});
-            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({ createdBy: user.email , createdTime: new Date().getTime(), title : "Untitled" } );
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(noteId).update({ noteId: noteId });
+            await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).update({ createdBy: user.email, createdTime: new Date().getTime(), title: "Untitled" });
         } catch (e) {
             await timeout(1500)
             setIsCreatingNewNote(false);
@@ -123,32 +119,32 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
     }
     return (
         <AppBar position="static" color="primary">
-        <Snackbar
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-             open={openSnackbar}
-            // onClose={handleClose}
-            message={message}
-            autoHideDuration={3000}
-            onClose={() =>{ setOpenSnackbar(false); setMessage("")}}
-          //  key={vertical + horizontal}
-        />
-        <Toolbar>
-            <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-            <Button component={Link} to="/home" color="inherit"> <HomeIcon /></Button>   
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>
-            Collaborative Note
-            </Typography>
-             {!inUser && <Button component={Link} to="/login" color="inherit"> <AccountCircle/> Log In</Button>}
-             {inUser && !inNote && <Button onClick={goToNewNote} color="inherit"> <AddCircleIcon/>   Create A New Note</Button>}
-             {inUser && inNote && canShare && <Button onClick={startShareNote} color="inherit"> 
-                    <ShareIcon/>   Share Note
-                    
-                    </Button>}
-             {inUser && <div>
-                <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit">  
-                    <MenuIcon color="inherit" />
-                    </Button>  
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={openSnackbar}
+                // onClose={handleClose}
+                message={message}
+                autoHideDuration={3000}
+                onClose={() => { setOpenSnackbar(false); setMessage("") }}
+            //  key={vertical + horizontal}
+            />
+            <Toolbar>
+                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                    <Button component={Link} to="/home" color="inherit"> <HomeIcon /></Button>
+                </IconButton>
+                <Typography variant="h6" className={classes.title}>
+                    Collaborative Note
+                </Typography>
+                {!inUser && <Button component={Link} to="/login" color="inherit"> <AccountCircle /> Log In</Button>}
+                {inUser && !inNote && <Button onClick={goToNewNote} color="inherit"> <AddCircleIcon />   Create A New Note</Button>}
+                {inUser && inNote && canShare && <Button onClick={startShareNote} color="inherit">
+                    <ShareIcon />   Share Note
+
+                </Button>}
+                {inUser && <div>
+                    <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit">
+                        <MenuIcon color="inherit" />
+                    </Button>
                     <Menu
                         id="simple-menu"
                         anchorEl={anchorEl}
@@ -156,52 +152,49 @@ export default function NavBar({inNote, noteId, inUser, canShare}) {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                    <MenuItem onClick={goToProfile}>Profile</MenuItem>
-                    <MenuItem onClick={handleSignout}>Logout</MenuItem>
-                </Menu>
+                        <MenuItem onClick={goToProfile}>Profile</MenuItem>
+                        <MenuItem onClick={handleSignout}>Logout</MenuItem>
+                    </Menu>
                 </div>
-             }
-             <Dialog open={openShareNoteForm} onClose={endShareNote} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Share Note</DialogTitle>
-                <DialogContent>
-                <DialogContentText>
-                    To share, please enter the email
-                </DialogContentText>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Email Address"
-                    type="email"
-                    fullWidth
-                    inputRef={shareEmailRef}
-                />
-                </DialogContent>
-                <DialogActions>
-                <Button onClick={endShareNote} color="primary">
-                    Cancel
-                </Button>
-                <Button onClick={processShareNote} color="primary">
-                    Share
-                </Button>
-                </DialogActions>
-            </Dialog>
-            
-            <Dialog open={isCreatingNewNote} onClose={()=>{setIsCreatingNewNote(false)}} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Creating Note</DialogTitle>
-                <DialogContent>
-                <DialogContentText className='center'>
-                    Creating New Note... Please wait...
-                    <CircularProgress  />
-                </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                </DialogActions>
-            </Dialog>
+                }
+                <Dialog open={openShareNoteForm} onClose={endShareNote} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Share Note</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            To share, please enter the email
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Email Address"
+                            type="email"
+                            fullWidth
+                            inputRef={shareEmailRef}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={endShareNote} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={processShareNote} color="primary">
+                            Share
+                        </Button>
+                    </DialogActions>
+                </Dialog>
 
-
-
-        </Toolbar>
-        </AppBar> 
+                <Dialog open={isCreatingNewNote} onClose={() => { setIsCreatingNewNote(false) }} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Creating Note</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText className='center'>
+                            Creating New Note... Please wait...
+                            <CircularProgress />
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                    </DialogActions>
+                </Dialog>
+            </Toolbar>
+        </AppBar>
     )
 }

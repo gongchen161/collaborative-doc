@@ -11,9 +11,9 @@ export const firebaseConfig = {
 };
 
 try {
-    if(!firebase.apps.length) {
+    if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig)
-    } 
+    }
 } catch (e) {
 
 }
