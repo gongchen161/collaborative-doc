@@ -10,6 +10,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
+import Feedback from '@material-ui/icons/Feedback';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import { useHistory } from 'react-router-dom';
 import firebase from '../Firebase';
@@ -113,13 +114,16 @@ function Home() {
             <NavBar inUser={true} ></NavBar>
             {user && loading && <div className='center'><CircularProgress color='primary' size={60} /><Typography variant="h5">Loading Notes...</Typography></div>}
             {user && !loading && <Box m={2} pt={3}>
+                
                 <Box m={2} pt={3}>
                     <Typography className='center' variant="h4" > My Notes</Typography>
                     <Divider variant="middle" />
                 </Box>
-                <Grid container spacing={3}>
-                    {(myNotes.length === 0 || !myNotes.some(el => el.createdBy === user.email)) ? <Typography variant="h5" >No notes found</Typography> :
-                        [...myNotes].map((x, i) =>
+
+                {(myNotes.length === 0 || !myNotes.some(el => el.createdBy === user.email)) ?
+                    <div className='center'><Feedback color='primary' /><Typography variant="h5" >Looks like you haven't added any notes.</Typography></div> :
+                    <Grid container spacing={3}>
+                        {[...myNotes].map((x, i) =>
                             x.createdBy === user.email &&
                             <Grid item xs={4} key={x.noteId}>
                                 <Card className={classes.root}>
@@ -137,15 +141,18 @@ function Home() {
                                 </Card>
                             </Grid>
                         )}
-                </Grid>
-                <Box m={2} pt={3}>
+                    </Grid>}
+
+
+                <Box m={2} pt={3} marginTop={10}>
                     <Typography className='center' variant="h4" > Notes shared with me</Typography>
                     <Divider variant="middle" />
                 </Box>
 
-                <Grid container spacing={3}>
-                    {(myNotes.length === 0 || !myNotes.some(el => el.createdBy !== user.email)) ? <Typography variant="h5" >No notes found</Typography> :
-                        [...myNotes].map((x, i) =>
+                {(myNotes.length === 0 || !myNotes.some(el => el.createdBy !== user.email)) ? 
+                     <div className='center'><Feedback color='primary' /><Typography variant="h5" >Nothing found. Ask your friends to share a note!</Typography></div>  :
+                    <Grid container spacing={3}>
+                        {[...myNotes].map((x, i) =>
                             x.createdBy !== user.email &&
                             <Grid item xs={4} key={x.noteId}>
                                 <Card className={classes.root}>
@@ -167,7 +174,7 @@ function Home() {
 
                             </Grid>
                         )}
-                </Grid>
+                </Grid>}
 
             </Box>}
 
