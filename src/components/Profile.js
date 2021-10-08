@@ -28,13 +28,13 @@ function Profile() {
     <div>
       <NavBar inUser={true}></NavBar>
       <Card className='center'>
-      <Typography className='center' > <AccountCircle color='primary' size={44} /> My Profile</Typography>
+      <Typography className='center' > <AccountCircle color='primary' style={{fontSize: '32px'}} /> My Profile</Typography>
       </Card>
       <Box m={2} pt={3} >
-          <Typography className='center'> <Email color='primary' /> {user.email}</Typography>
+          <Typography className='center'> <div><Email color='primary'  />   {user.email} </div></Typography>
       </Box>
         <Box m={2} pt={3}>
-          <Typography className='center' > <Feedback color='primary' />More to come...</Typography>
+          <Typography className='center' > <div> <Feedback color='primary' />   More to come... </div></Typography>
       </Box>
     </div>
   )
