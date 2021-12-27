@@ -33,5 +33,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: production-files
+          path: ./build
+
       - name: Deploy
-        run: CI=false npm run deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
