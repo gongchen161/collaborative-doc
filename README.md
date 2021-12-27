@@ -1,4 +1,5 @@
-# Collaborative Note
+# Collaborative Note 
+[![CI](https://github.com/gongchen161/collaborative-note/actions/workflows/build.yml/badge.svg)](https://github.com/gongchen161/collaborative-note/actions/workflows/build.yml)
 
 Deployed @ https://gongchen161.github.io/collaborative-note
 
