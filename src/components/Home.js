@@ -64,6 +64,8 @@ function Home() {
     const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
     const [deleteNoteTitle, setDeleteNoteTitle] = useState("");
     const [deleteNoteId, setDeleteNoteId] = useState("");
+    const [isOwner, setIsOwner] = useState(false);
+
     useEffect(() => {
         if (!user) {
             history.push('/login')
@@ -73,7 +75,7 @@ function Home() {
         firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).on('child_added', function (data) {
             var childData = data.val();
             if (childData) {
-                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.noteId}-misc`).on('value', function (titleData) {
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${childData.noteId}-misc`).once('value', function (titleData) {
                     var titleChild = titleData.val();
                     const found = myNotes.some(el => el.noteId === childData.noteId);
                     if (!found) {
@@ -90,15 +92,28 @@ function Home() {
 
     }, [user])
 
-    const confirmDeleteNote = (open, title, noteId) => {
+    const confirmDeleteNote = (open, title, noteId, isOwner=false) => {
         setOpenDeleteConfirm(open);
         setDeleteNoteTitle(title);
         setDeleteNoteId(noteId);
+        setIsOwner(isOwner);
     }
 
-    const deleteNoteAction = async () => {
+    const deleteNoteAction = async (isOwner) => {
         try {
             await firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(user.email)}-user`).child(deleteNoteId).remove();
+            if (isOwner) {
+                // if owner, also delete from shared users
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${deleteNoteId}-shared`).once( 'value', (data) => {
+                    var childData = data.val();
+                    if (childData && childData.sharedUsers) {
+                        for (let i = 0; i < childData.sharedUsers.length; i++) {
+                            const sharedEmail = childData.sharedUsers[i].userEmail;
+                            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(sharedEmail)}-user`).child(deleteNoteId).remove();
+                        }
+                    }
+                })
+            }
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
@@ -132,7 +147,7 @@ function Home() {
                                     <CardContent className={classes.paper}>
                                         <Typography className={classes.relativeDiv}>
                                             <AssignmentIcon className={classes.leftIcon} color='primary' />
-                                            <Button onClick={() => { confirmDeleteNote(true, x.title, x.noteId) }} className={classes.rightIcon}><DeleteForeverIcon color="primary" /></Button>
+                                            <Button onClick={() => { confirmDeleteNote(true, x.title, x.noteId, true) }} className={classes.rightIcon}><DeleteForeverIcon color="primary" /></Button>
                                         </Typography>
                                         <CardActionArea component={Link} to={`/note/${x.noteId}`}>
                                             <Typography variant="h5" > {x.title}</Typography>
@@ -167,7 +182,7 @@ function Home() {
                                         <CardActionArea component={Link} to={`/note/${x.noteId}`}>
 
                                             <Typography variant="h5" > {x.title}</Typography>
-                                            <Typography variant="body1" > From: {x.createdBy}</Typography>
+                                            <Typography variant="body1" > Shared By: {x.createdBy}</Typography>
                                             <Typography variant="caption" > {new Date(x.createdTime).toString()}</Typography>
 
                                         </CardActionArea>
@@ -191,7 +206,7 @@ function Home() {
                     <Button onClick={() => { confirmDeleteNote(false, "", "") }} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => { deleteNoteAction() }} color="primary">
+                    <Button onClick={() => { deleteNoteAction(isOwner) }} color="primary">
                         Delete
                     </Button>
                 </DialogActions>

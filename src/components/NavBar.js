@@ -23,6 +23,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { firebaseAuth } from '../Firebase';
 import ShareIcon from '@material-ui/icons/Share';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -30,6 +31,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import SHA256 from "crypto-js/sha256";
 import { CircularProgress } from '@material-ui/core';
+import { DataGrid, GridRowsProp, GridColDef } from '@material-ui/data-grid'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -43,14 +45,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function NavBar({ inNote, noteId, inUser, canShare }) {
+const columns = [
+    { field: 'userEmail', headerName: 'Email', width: 200 },
+];
+
+export default function NavBar({ inNote, noteId, inUser, canShare, ownerEmail, sharedUsers, setSharedUsers }) {
 
     const classes = useStyles();
     const history = useHistory();
     const [anchorEl, setAnchorEl] = useState(null);
     const [openShareNoteForm, setOpenShareNoteForm] = useState(false);
+    const [openViewSharedUsers, setOpenViewSharedUsers] = useState(false);
     const { openSnackbar, setOpenSnackbar, message, setMessage, user, timeout } = useAuth()
     const shareEmailRef = useRef();
+    const [selectedUserEmails, setSelectedUserEmails] = useState([]);
     const [isCreatingNewNote, setIsCreatingNewNote] = useState(false);
 
     const handleClick = (event) => {
@@ -85,11 +93,42 @@ export default function NavBar({ inNote, noteId, inUser, canShare }) {
         setOpenShareNoteForm(false);
     }
 
+    const startOpenViewSharedUsers = () => {
+        setOpenViewSharedUsers(true);
+    }
+
+    const endOpenViewSharedUsers = () => {
+        setOpenViewSharedUsers(false);
+    }
+
+    const removeSharedUsers = () => {
+        const finalSharedUsers = [];
+        for(let i = 0; i < sharedUsers.length; i++) {
+            if (!selectedUserEmails.includes(sharedUsers[i].userEmail)) {
+                finalSharedUsers.push(sharedUsers[i]);
+            }
+        }
+        firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-shared`).update({ sharedUsers: finalSharedUsers });
+
+        for (let i = 0; i < selectedUserEmails.length; i++) {
+            const selectedEmail = selectedUserEmails[i];
+            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(selectedEmail)}-user`).child(noteId).remove();
+        }
+        if (finalSharedUsers.length === 0) {
+            setSharedUsers(finalSharedUsers);
+        }
+        setOpenViewSharedUsers(false);
+    }
 
     const processShareNote = () => {
         try {
-
-            firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({ noteId: noteId });
+            const userToShare = shareEmailRef.current.value
+            if (userToShare && !sharedUsers.includes(userToShare)) {
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({ noteId: noteId });
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-shared`).update({ sharedUsers: [...sharedUsers, {userEmail : userToShare}] });
+             //   setSharedUsers(arr => [...arr, {userEmail : userToShare}]);
+                setOpenViewSharedUsers()
+            }
         } catch (e) {
             setOpenSnackbar(true)
             setMessage(e.message)
@@ -137,10 +176,18 @@ export default function NavBar({ inNote, noteId, inUser, canShare }) {
                 </Typography>
                 {!inUser && <Button component={Link} to="/login" color="inherit"> <AccountCircle /> Log In</Button>}
                 {inUser && !inNote && <Button onClick={goToNewNote} color="inherit"> <AddCircleIcon />   Create A New Note</Button>}
-                {inUser && inNote && canShare && <Button onClick={startShareNote} color="inherit">
-                    <ShareIcon />   Share Note
-
+                
+                {inUser && inNote && canShare && user.email && user.email === ownerEmail && <Button onClick={startShareNote} color="inherit">
+                    <ShareIcon />   Share With Friend
                 </Button>}
+                {inUser && inNote && canShare && user.email && user.email === ownerEmail && <Button onClick={startOpenViewSharedUsers} color="inherit">
+                    <PeopleOutlineIcon />   Shared Users
+                </Button>}
+
+                {inUser && inNote && canShare && user.email !== ownerEmail &&  <Typography variant="h6">
+                    Shared by: {ownerEmail}
+                </Typography>}
+
                 {inUser && <div>
                     <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick} color="inherit">
                         <MenuIcon color="inherit" />
@@ -179,6 +226,38 @@ export default function NavBar({ inNote, noteId, inUser, canShare }) {
                         </Button>
                         <Button onClick={processShareNote} color="primary">
                             Share
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                
+                <Dialog open={openViewSharedUsers} onClose={endOpenViewSharedUsers} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Shared Users</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {"     These users have access to this note:          "} 
+                        </DialogContentText>
+                        <div style={{ height: 300 }}>
+                            <DataGrid 
+                                rows={sharedUsers ? [...sharedUsers] : []}  
+                                getRowId={(row) => row.userEmail}
+                                columns={columns} 
+                                pageSize={5}
+                                rowsPerPageOptions={[5]}
+                                checkboxSelection
+                                disableSelectionOnClick
+                                hideFooter
+                                onSelectionModelChange={(ids) => {
+                                    setSelectedUserEmails([...ids])
+                                }}
+                            />
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={removeSharedUsers} color="primary">
+                            Remove Selected Users
+                        </Button>
+                        <Button onClick={endOpenViewSharedUsers} color="primary">
+                            Close
                         </Button>
                     </DialogActions>
                 </Dialog>

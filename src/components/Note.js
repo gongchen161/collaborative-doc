@@ -22,6 +22,8 @@ export default function Note() {
 
     const quill = useRef();
     const [title, setTitle] = useState("Untitled");
+    const [sharedUsers, setSharedUsers] = useState([]);
+    const [ownerEmail, setOwnerEmail] = useState("NULL");
     const { noteId } = useParams();
     const [sessionId] = useState(uuid());
 
@@ -73,10 +75,21 @@ export default function Note() {
                     }
                 })
 
+
                 firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-misc`).on('value', function (data) {
                     var childData = data.val();
-                    setTitle(childData.title);
+                    if (childData) {
+                        setTitle(childData.title);
+                        setOwnerEmail( childData.createdBy );
+                    }
 
+                })
+
+                firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-shared`).on('value', function (data) {
+                    var childData = data.val();
+                    if (childData) {
+                        setSharedUsers(childData.sharedUsers);
+                    }
                 })
             };
             getInfo();
@@ -104,7 +117,7 @@ export default function Note() {
     return (
         <div>
 
-            <NavBar inNote={true} noteId={noteId} inUser={true} canShare={isAuthorized === 1} />
+            <NavBar inNote={true} noteId={noteId} inUser={true} canShare={isAuthorized === 1} ownerEmail={ownerEmail} sharedUsers={sharedUsers} setSharedUsers={setSharedUsers} />
             {isAuthorized === 0 && <div className='center'><CircularProgress color='primary' size={60} /><Typography variant="h5">Loading Notes...</Typography></div>}
             {isAuthorized === 2 && <div className='center'><ErrorIcon color='primary' size={60} /><Typography variant="h5">You cannot view this note</Typography></div>}
             {user && isAuthorized === 1 && <div>
