@@ -123,7 +123,10 @@ export default function NavBar({ inNote, noteId, inUser, canShare, ownerEmail, s
     const processShareNote = () => {
         try {
             const userToShare = shareEmailRef.current.value
-            if (userToShare && !sharedUsers.includes(userToShare)) {
+            if (user && user.email === userToShare) {
+                setOpenSnackbar(true)
+                setMessage("Cannot share with yourself");
+            } else if (userToShare && !sharedUsers.includes(userToShare)) {
                 firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${SHA256(shareEmailRef.current.value)}-user`).child(noteId).update({ noteId: noteId });
                 firebase.database().ref(process.env.REACT_APP_DB_NAME).child(`/${noteId}-shared`).update({ sharedUsers: [...sharedUsers, {userEmail : userToShare}] });
              //   setSharedUsers(arr => [...arr, {userEmail : userToShare}]);
