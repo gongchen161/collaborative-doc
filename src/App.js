@@ -8,8 +8,12 @@ import Profile from './components/Profile'
 import { HashRouter, Switch, Redirect } from "react-router-dom"
 import RouteWrapper from "./RouteWrapper";
 import { AuthProvider } from './AuthContext';
+import { VERSION_NUMBER } from "./Constants";
+
+
 function App() {
 
+  console.log("Version " + VERSION_NUMBER);
 
   return (
     <AuthProvider>
