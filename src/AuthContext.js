@@ -72,7 +72,6 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    console.log("CC")
     const cleanup = firebaseAuth.onAuthStateChanged((u) => {
       setUser(u);
       setFirebaseInitDone(true)

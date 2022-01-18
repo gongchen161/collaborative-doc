@@ -24,7 +24,7 @@ export default function Intro() {
           <Divider variant="inset" className={classes.divider} />
 
           <Share color='primary' className={classes.icon} />
-          <Typography component="h1" variant="h5"  >Share with someone</Typography>
+          <Typography component="h1" variant="h5"  >Share with your friends</Typography>
           <Divider variant="inset" className={classes.divider} />
 
           <GroupIcon color='primary' className={classes.icon} />
